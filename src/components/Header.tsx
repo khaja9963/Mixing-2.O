@@ -11,7 +11,8 @@ import {
   ShieldCheck, 
   BookOpen, 
   Users, 
-  Mail 
+  Mail,
+  ChevronRight 
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -73,6 +74,35 @@ export const Header: React.FC<HeaderProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMobileMenuOpen]);
+
+  const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const navHoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleNavMouseEnter = () => {
+    if (navHoverTimeoutRef.current) {
+      clearTimeout(navHoverTimeoutRef.current);
+      navHoverTimeoutRef.current = null;
+    }
+    setIsNavExpanded(true);
+  };
+
+  const handleNavMouseLeave = () => {
+    if (navHoverTimeoutRef.current) {
+      clearTimeout(navHoverTimeoutRef.current);
+    }
+    navHoverTimeoutRef.current = setTimeout(() => {
+      setIsNavExpanded(false);
+      setHoveredLink(null);
+    }, 280);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (navHoverTimeoutRef.current) {
+        clearTimeout(navHoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const navLinks = [
     { name: 'Home', icon: Home },
@@ -136,65 +166,139 @@ export const Header: React.FC<HeaderProps> = ({
           </motion.button>
         </div>
 
-        {/* Center Navigation Links (Apple-Style Glassy Pill Dock with Sliding Spring Indicator) */}
-        <nav 
-          className="hidden lg:flex items-center gap-0.5 p-1 rounded-full bg-slate-200/45 backdrop-blur-xl border border-slate-300/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
-          onMouseLeave={() => setHoveredLink(null)}
+        {/* Center Navigation Links (Expandable Apple-Style Glassy Pill Dock with Right Arrow Trigger) */}
+        <div 
+          className="hidden lg:flex items-center"
+          onMouseEnter={handleNavMouseEnter}
+          onMouseLeave={handleNavMouseLeave}
         >
-          {navLinks.map((item) => {
-            const link = item.name;
-            const isActive = activePage === link;
-            const isHovered = hoveredLink === link;
-
-            return (
-              <motion.button
-                key={link}
-                onClick={() => onNavigate(link)}
-                onMouseEnter={() => setHoveredLink(link)}
-                whileHover={reduceMotion ? undefined : { y: -0.5 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer focus:outline-none"
+          <motion.nav 
+            layout
+            transition={
+              reduceMotion 
+                ? { duration: 0 } 
+                : { type: 'spring', stiffness: 450, damping: 34 }
+            }
+            className="flex items-center gap-1 p-1 rounded-full bg-slate-200/45 backdrop-blur-xl border border-slate-300/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
+          >
+            {/* If Collapsed: Display Current Active Page + Prominent Animated Right Arrow */}
+            {!isNavExpanded ? (
+              <motion.div
+                key="collapsed-nav"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.18 }}
+                className="flex items-center gap-1.5"
               >
-                {/* Apple-style sliding active pill */}
-                {isActive && (
-                  <motion.div
-                    layoutId="appleNavActivePill"
-                    transition={
-                      reduceMotion 
-                        ? { duration: 0 } 
-                        : { type: 'spring', stiffness: 420, damping: 32 }
-                    }
-                    className="absolute inset-0 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-slate-200/90 z-0"
-                  />
-                )}
+                {/* Active Page Pill */}
+                <div className="px-3.5 py-1.5 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-slate-200/90 text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                  <span>{activePage}</span>
+                </div>
 
-                {/* Subtle sliding hover preview pill */}
-                {isHovered && !isActive && (
-                  <motion.div
-                    layoutId="appleNavHoverPill"
-                    transition={
-                      reduceMotion 
-                        ? { duration: 0 } 
-                        : { type: 'spring', stiffness: 480, damping: 35 }
-                    }
-                    className="absolute inset-0 rounded-full bg-white/60 z-0"
-                  />
-                )}
-
-                <span
-                  className={`relative z-10 transition-colors duration-150 ${
-                    isActive
-                      ? 'text-slate-900 font-bold'
-                      : 'text-slate-600 hover:text-slate-950 font-medium'
-                  }`}
+                {/* Right Arrow Interactive Hover Trigger */}
+                <motion.button
+                  id="nav-expand-arrow-btn"
+                  onMouseEnter={handleNavMouseEnter}
+                  onClick={() => setIsNavExpanded(true)}
+                  whileHover={{ scale: 1.1, x: 2 }}
+                  whileTap={{ scale: 0.92 }}
+                  className="px-2.5 py-1.5 rounded-full bg-white/80 hover:bg-white text-slate-700 hover:text-sky-600 border border-slate-200/70 shadow-xs flex items-center gap-1 text-xs font-bold transition-all cursor-pointer group"
+                  title="Hover to view navigation contents"
+                  aria-label="Hover to view navigation contents"
                 >
-                  {link}
-                </span>
-              </motion.button>
-            );
-          })}
-        </nav>
+                  <span className="text-[11px] text-slate-500 group-hover:text-sky-600 transition-colors">Menu</span>
+                  <motion.div
+                    animate={reduceMotion ? undefined : { x: [0, 3, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5 text-sky-600" />
+                  </motion.div>
+                </motion.button>
+              </motion.div>
+            ) : (
+              /* If Expanded: Reveal All Navigation Items + Right Indicator */
+              <motion.div
+                key="expanded-nav"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-0.5"
+              >
+                {navLinks.map((item) => {
+                  const link = item.name;
+                  const isActive = activePage === link;
+                  const isHovered = hoveredLink === link;
+
+                  return (
+                    <motion.button
+                      key={link}
+                      onClick={() => {
+                        onNavigate(link);
+                        handleNavMouseLeave();
+                      }}
+                      onMouseEnter={() => setHoveredLink(link)}
+                      whileHover={reduceMotion ? undefined : { y: -0.5 }}
+                      whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      className="relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer focus:outline-none"
+                    >
+                      {/* Apple-style sliding active pill */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="appleNavActivePill"
+                          transition={
+                            reduceMotion 
+                              ? { duration: 0 } 
+                              : { type: 'spring', stiffness: 420, damping: 32 }
+                          }
+                          className="absolute inset-0 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-slate-200/90 z-0"
+                        />
+                      )}
+
+                      {/* Subtle sliding hover preview pill */}
+                      {isHovered && !isActive && (
+                        <motion.div
+                          layoutId="appleNavHoverPill"
+                          transition={
+                            reduceMotion 
+                              ? { duration: 0 } 
+                              : { type: 'spring', stiffness: 480, damping: 35 }
+                          }
+                          className="absolute inset-0 rounded-full bg-white/60 z-0"
+                        />
+                      )}
+
+                      <span
+                        className={`relative z-10 transition-colors duration-150 ${
+                          isActive
+                            ? 'text-slate-900 font-bold'
+                            : 'text-slate-600 hover:text-slate-950 font-medium'
+                        }`}
+                      >
+                        {link}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+
+                {/* Right Arrow End-Cap Button */}
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsNavExpanded(false)}
+                  className="ml-1 p-1.5 rounded-full bg-white/70 hover:bg-white text-slate-400 hover:text-sky-600 border border-slate-200/60 shadow-2xs transition-colors cursor-pointer"
+                  title="Close Navigation Menu"
+                  aria-label="Close Navigation Menu"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 rotate-180 text-slate-400 hover:text-sky-600" />
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.nav>
+        </div>
 
         {/* Right Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
