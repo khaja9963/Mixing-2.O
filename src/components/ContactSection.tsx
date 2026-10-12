@@ -17,7 +17,7 @@ import {
 import { ClyptusInteractiveGlobe, CLYPTUS_OFFICES } from './ClyptusInteractiveGlobe';
 
 export const ContactSection: React.FC = () => {
-  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'bengaluru' | 'dubai'>('hyderabad');
+  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'dubai' | 'usa'>('hyderabad');
   const [hoveredOfficeId, setHoveredOfficeId] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [formData, setFormData] = useState({
