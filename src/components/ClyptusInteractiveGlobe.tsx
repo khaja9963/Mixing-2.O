@@ -41,7 +41,7 @@ export const CLYPTUS_OFFICES: OfficeLocation[] = [
     badge: 'UAE OFFICE',
     lat: 25.2137,
     lon: 55.2814,
-    color: '#8b87ea',
+    color: '#e8501e',
     address: '101 Sheikh Zayed Rd, Trade Centre, DIFC, Dubai, UAE',
     emails: ['hr.uae@clyptus.com'],
     phones: ['+971 52 350 3297'],
@@ -67,7 +67,7 @@ export const CLYPTUS_OFFICES: OfficeLocation[] = [
 
 const HIGHLIGHT: Record<string, string> = {
   USA: '#ff7a42',
-  ARE: '#8b87ea',
+  ARE: '#e8501e',
   IND: '#e8501e',
 };
 
