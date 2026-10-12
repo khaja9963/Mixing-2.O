@@ -231,8 +231,8 @@ export const AiGalaxyParticleSection: React.FC<AiGalaxyParticleSectionProps> = (
         const scrollAlphaFade = Math.max(0.45, 1 - Math.min(0.55, progress * 0.7));
         const finalAlpha = Math.max(0, Math.min(1, p.alpha * outerFade * scrollAlphaFade));
 
-        // Draw particle dot only when visible
-        if (finalAlpha > 0.001) {
+        // Draw particle dot only when visible and outside the top navbar area (py >= 90)
+        if (finalAlpha > 0.001 && py >= 90) {
           ctx.save();
           ctx.globalAlpha = finalAlpha;
           ctx.fillStyle = p.charcoalHex;

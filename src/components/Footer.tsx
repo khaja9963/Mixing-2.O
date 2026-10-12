@@ -1,4 +1,5 @@
 import React from 'react';
+import { ClyptusLogo } from './ClyptusLogo';
 
 interface FooterProps {
   onNavigate?: (page: string, sectionId?: string) => void;
@@ -17,12 +18,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenResourceModal 
           <div className="col-span-2 lg:col-span-1 flex flex-col justify-between mb-2 lg:mb-0">
             <div>
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-blue-500/30">
-                  C
-                </div>
-                <span className="text-2xl font-black tracking-tight text-white uppercase font-mono">
-                  CLYPTUS
-                </span>
+                <ClyptusLogo 
+                  theme="dark" 
+                  className="h-10 w-auto object-contain" 
+                />
               </div>
 
               <p className="text-xs text-slate-400 leading-relaxed font-medium max-w-sm mt-3">

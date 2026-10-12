@@ -32,19 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
-
-  // Scroll state detection
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 15);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Close mobile menu on Escape key, click outside, and lock body scroll
   useEffect(() => {
@@ -128,24 +117,15 @@ export const Header: React.FC<HeaderProps> = ({
       initial={reduceMotion ? false : { y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-      className={`sticky top-0 z-50 w-full select-none transition-colors duration-300 ${
-        isScrolled
-          ? 'bg-white/80 backdrop-blur-2xl backdrop-saturate-180 border-b border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
-          : 'bg-white/65 backdrop-blur-xl backdrop-saturate-150 border-b border-slate-200/50 shadow-xs'
-      }`}
+      className="sticky top-0 z-50 w-full select-none bg-transparent pointer-events-auto"
     >
-      {/* Subtle Apple Top Specular Ambient Line */}
-      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 to-transparent pointer-events-none" />
-
-      {/* Main Navbar Container */}
+      {/* Main Navbar Container (Full width so logo is anchored to left edge, away from page text) */}
       <div 
-        className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 transition-all duration-300 ${
-          isScrolled ? 'py-2 sm:py-2.5' : 'py-2.5 sm:py-3.5'
-        }`}
+        className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between gap-4 h-16 sm:h-[68px] relative"
       >
         
-        {/* Brand Logo with Smooth Spring Hover */}
-        <div className="flex items-center gap-3">
+        {/* Brand Logo with Smooth Spring Hover (Anchored to Left Edge) */}
+        <div className="flex items-center shrink-0 z-10">
           <motion.button 
             whileHover={reduceMotion ? undefined : { scale: 1.03 }}
             whileTap={reduceMotion ? undefined : { scale: 0.97 }}
@@ -156,18 +136,18 @@ export const Header: React.FC<HeaderProps> = ({
               onPlayIntro();
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }} 
-            className="flex items-center group text-left py-0.5 cursor-pointer focus:outline-none"
+            className="flex items-center group text-left py-0 cursor-pointer focus:outline-none"
             aria-label="Clyptus Home"
           >
             <ClyptusLogo 
-              className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]" 
+              className="h-11 sm:h-14 md:h-[56px] w-auto object-contain transition-transform group-hover:scale-[1.02]" 
             />
           </motion.button>
         </div>
 
-        {/* Center Navigation Links (Expandable Apple-Style Glassy Pill Dock with Right Arrow Trigger) */}
+        {/* Center Navigation Links (Centered via absolute positioning so it never interferes with left logo) */}
         <div 
-          className="hidden lg:flex items-center"
+          className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 pointer-events-auto"
           onMouseEnter={handleNavMouseEnter}
           onMouseLeave={handleNavMouseLeave}
         >
@@ -300,7 +280,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right Action Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
 
 
           {/* Quick Studio 3D Customizer / Filter Toggle Button */}

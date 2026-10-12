@@ -82,7 +82,8 @@ export const FullPageParticleBackground: React.FC = () => {
         ? Math.random() * (width * sideMarginRatio) 
         : width * (1 - sideMarginRatio) + Math.random() * (width * sideMarginRatio);
 
-      const driftY = Math.random() * height;
+      const NAVBAR_SAFE_ZONE_Y = 95;
+      const driftY = NAVBAR_SAFE_ZONE_Y + Math.random() * Math.max(10, height - NAVBAR_SAFE_ZONE_Y);
 
       const driftAngle = Math.random() * Math.PI * 2;
       const speed = 0.25 + Math.random() * 0.65;
@@ -287,8 +288,9 @@ export const FullPageParticleBackground: React.FC = () => {
           if (p.driftX < width * (1 - sideMarginRatio)) p.driftX = width + 30;
           if (p.driftX > width + 30) p.driftX = width * (1 - sideMarginRatio);
         }
-        if (p.driftY < -50) p.driftY = height + 50;
-        if (p.driftY > height + 50) p.driftY = -50;
+        const NAVBAR_SAFE_ZONE_Y = 95;
+        if (p.driftY < NAVBAR_SAFE_ZONE_Y) p.driftY = height + 40;
+        if (p.driftY > height + 40) p.driftY = NAVBAR_SAFE_ZONE_Y;
 
         p.wobbleOffset += p.wobbleSpeed * (1 + assembleFactor * 0.2);
 
@@ -350,6 +352,11 @@ export const FullPageParticleBackground: React.FC = () => {
         }
 
         if (currentAlpha > 0.01) {
+          // Never render particles in the top navbar zone (y < 95)
+          if (renderY < 95 && assembleFactor < 0.2) {
+            return;
+          }
+
           // Increase size for blue text particles + add subtle breathing pulse wave when formed
           const isBlueText = p.logoColor === '#2b3990';
           const sizeBoost = isBlueText ? 0.45 : 0.25;

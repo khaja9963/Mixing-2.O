@@ -60,7 +60,7 @@ export const ContactSection: React.FC = () => {
       <div className="absolute bottom-1/3 left-10 w-[500px] h-[500px] bg-indigo-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto flex flex-col gap-12 sm:gap-16">
-        
+
         {/* Top Header Section */}
         <div className="text-center flex flex-col items-center gap-3.5 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-sky-200/80 text-xs font-mono text-sky-700 font-bold uppercase shadow-xs">
@@ -82,10 +82,10 @@ export const ContactSection: React.FC = () => {
 
         {/* MAIN SPLIT LAYOUT: LEFT CONTENT & FORM | RIGHT 3D ROTATING GLOBE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
+
           {/* LEFT COLUMN: INTRO, BRANCH SELECTOR, ACTIVE LOCATION CARD & CONTACT FORM */}
           <div className="lg:col-span-6 flex flex-col gap-6 order-2 lg:order-1">
-            
+
             {/* Office Switcher Tabs */}
             <div className="p-2 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-1.5">
               <span className="text-[11px] font-mono font-bold text-slate-500 uppercase px-3 py-1 flex items-center gap-1.5">
@@ -96,11 +96,10 @@ export const ContactSection: React.FC = () => {
                 <button
                   id="hub-tab-overview"
                   onClick={() => setSelectedOfficeId(null)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                    selectedOfficeId === null
-                      ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-400'
-                      : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
-                  }`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${selectedOfficeId === null
+                    ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-400'
+                    : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
+                    }`}
                   title="Global Overview"
                 >
                   <span>Overview</span>
@@ -114,11 +113,10 @@ export const ContactSection: React.FC = () => {
                       onClick={() => setSelectedOfficeId(isSelected ? null : office.id)}
                       onMouseEnter={() => setHoveredOfficeId(office.id)}
                       onMouseLeave={() => setHoveredOfficeId(null)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-300'
-                          : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
-                      }`}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isSelected
+                        ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-300'
+                        : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
+                        }`}
                     >
                       <span
                         className="w-2 h-2 rounded-full"
@@ -348,7 +346,7 @@ export const ContactSection: React.FC = () => {
           {/* RIGHT COLUMN: LARGE INTERACTIVE 3D GLOBE CONTAINER */}
           <div className="lg:col-span-6 flex flex-col gap-4 order-1 lg:order-2 sticky top-24">
             <div className="relative w-full rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-slate-50/80 border border-sky-100 shadow-xl overflow-hidden min-h-[460px] sm:min-h-[560px] lg:min-h-[640px] flex items-center justify-center">
-              
+
               {/* Subtle background circular glow behind Earth */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-[380px] sm:w-[460px] h-[380px] sm:h-[460px] rounded-full bg-gradient-to-tr from-sky-200/30 to-indigo-200/20 blur-2xl" />
@@ -390,11 +388,10 @@ export const ContactSection: React.FC = () => {
                 <div
                   key={office.id}
                   onClick={() => setSelectedOfficeId(office.id)}
-                  className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white border transition-all duration-300 cursor-pointer ${
-                    isSelected
-                      ? 'border-sky-400 ring-2 ring-sky-200 shadow-xl'
-                      : 'border-slate-200/90 shadow-sm hover:shadow-lg hover:border-sky-300'
-                  }`}
+                  className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white border transition-all duration-300 cursor-pointer ${isSelected
+                    ? 'border-sky-400 ring-2 ring-sky-200 shadow-xl'
+                    : 'border-slate-200/90 shadow-sm hover:shadow-lg hover:border-sky-300'
+                    }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
