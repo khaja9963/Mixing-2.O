@@ -133,6 +133,11 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
   const mountRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<GlobeInstance | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const onSelectLocationRef = useRef(onSelectLocation);
+
+  useEffect(() => {
+    onSelectLocationRef.current = onSelectLocation;
+  }, [onSelectLocation]);
 
   // Smooth cinematic camera zoom into location (India / Hyderabad, Dubai, USA)
   useEffect(() => {
@@ -232,12 +237,12 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .onPolygonClick((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
             const iso = feat?.properties?.ISO_A3;
-            if (iso === 'IND' && onSelectLocation) {
-              onSelectLocation('hyderabad');
-            } else if (iso === 'ARE' && onSelectLocation) {
-              onSelectLocation('dubai');
-            } else if (iso === 'USA' && onSelectLocation) {
-              onSelectLocation('usa');
+            if (iso === 'IND' && onSelectLocationRef.current) {
+              onSelectLocationRef.current('hyderabad');
+            } else if (iso === 'ARE' && onSelectLocationRef.current) {
+              onSelectLocationRef.current('dubai');
+            } else if (iso === 'USA' && onSelectLocationRef.current) {
+              onSelectLocationRef.current('usa');
             }
           })
           .arcsData(ARCS)
@@ -255,8 +260,8 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .pointAltitude(0.015)
           .onPointClick((point: unknown) => {
             const p = point as { id: 'hyderabad' | 'dubai' | 'usa' };
-            if (p?.id && onSelectLocation) {
-              onSelectLocation(p.id);
+            if (p?.id && onSelectLocationRef.current) {
+              onSelectLocationRef.current(p.id);
             }
           })
           // Animated Ripple Radar Rings
@@ -286,8 +291,8 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .labelAltitude(0.02)
           .onLabelClick((l: unknown) => {
             const label = l as { id: 'hyderabad' | 'dubai' | 'usa' };
-            if (label?.id && onSelectLocation) {
-              onSelectLocation(label.id);
+            if (label?.id && onSelectLocationRef.current) {
+              onSelectLocationRef.current(label.id);
             }
           });
 
@@ -302,6 +307,15 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         controls.enableZoom = true; // allow interactive user zooming as well
 
         worldRef.current = world;
+
+        // If a location is already selected on mount, animate to it
+        if (selectedLocationId) {
+          const target = LOCATIONS.find((loc) => loc.id === selectedLocationId);
+          if (target) {
+            world.pointOfView({ lat: target.lat, lng: target.lng, altitude: 1.2 }, 800);
+            controls.autoRotate = false;
+          }
+        }
 
         const handleResize = () => {
           if (!mount || !world) return;
@@ -336,7 +350,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       isDisposed = true;
       cleanupPromise.then((cleanup) => cleanup?.());
     };
-  }, [onSelectLocation]);
+  }, []);
 
   return (
     <div className={`relative w-full h-full min-h-[380px] sm:min-h-[480px] lg:min-h-[560px] flex items-center justify-center overflow-hidden ${className}`}>
