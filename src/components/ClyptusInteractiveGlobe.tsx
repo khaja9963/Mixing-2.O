@@ -143,9 +143,9 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     if (selectedLocationId) {
       const target = LOCATIONS.find((l) => l.id === selectedLocationId);
       if (target) {
-        // Deep cinematic zoom into city & country (altitude 0.9 gives close regional detail)
+        // Deep cinematic zoom into city & country (altitude 1.2 gives crisp regional focus)
         world.pointOfView(
-          { lat: target.lat, lng: target.lng, altitude: 0.9 },
+          { lat: target.lat, lng: target.lng, altitude: 1.2 },
           1400
         );
         if (controls) {
@@ -305,7 +305,9 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
 
         const handleResize = () => {
           if (!mount || !world) return;
-          world.width(mount.clientWidth).height(mount.clientHeight);
+          const w = mount.clientWidth || 550;
+          const h = mount.clientHeight || 550;
+          world.width(w).height(h);
         };
 
         const resizeObserver = new ResizeObserver(handleResize);

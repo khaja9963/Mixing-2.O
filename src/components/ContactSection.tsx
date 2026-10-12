@@ -103,6 +103,7 @@ export const ContactSection: React.FC = () => {
                   return (
                     <button
                       key={office.id}
+                      id={`hub-tab-${office.id}`}
                       onClick={() => setSelectedOfficeId(office.id)}
                       onMouseEnter={() => setHoveredOfficeId(office.id)}
                       onMouseLeave={() => setHoveredOfficeId(null)}
