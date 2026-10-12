@@ -380,6 +380,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       ringMesh: THREE.Mesh;
       pulseScale: number;
       hitMesh: THREE.Mesh;
+      impactIntensity: number;
     }> = [];
 
     const markerGroup = new THREE.Group();
@@ -442,66 +443,144 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         ringMesh,
         pulseScale: 1,
         hitMesh,
+        impactIntensity: 0,
       });
     });
 
-    // 7. 3D Curved Arcs & Traveling Global Light Pulses
-    // Arcs connect: Hyderabad ↔ Bengaluru, Bengaluru ↔ Dubai, Hyderabad ↔ Dubai
-    const arcPairs = [
-      { from: 'hyderabad', to: 'bengaluru', color: '#38BDF8', speed: 0.45 },
-      { from: 'bengaluru', to: 'dubai', color: '#0077ED', speed: 0.35 },
-      { from: 'hyderabad', to: 'dubai', color: '#0284C7', speed: 0.32 },
+    // 7. Dynamic Jumping Lines Arcing from One Branch to Another
+    // Routes connecting branches with parabolic trajectories and traveling luminous trails
+    const jumpingRoutes = [
+      { from: 'hyderabad', to: 'dubai', color: '#0077ED', headColor: '#38BDF8', duration: 2.2, delay: 0.0, trailLength: 0.36 },
+      { from: 'dubai', to: 'bengaluru', color: '#0284C7', headColor: '#60A5FA', duration: 2.4, delay: 1.1, trailLength: 0.36 },
+      { from: 'bengaluru', to: 'hyderabad', color: '#059669', headColor: '#34D399', duration: 1.3, delay: 0.4, trailLength: 0.32 },
+      { from: 'hyderabad', to: 'bengaluru', color: '#38BDF8', headColor: '#93C5FD', duration: 1.3, delay: 1.8, trailLength: 0.32 },
+      { from: 'dubai', to: 'hyderabad', color: '#6366F1', headColor: '#C7D2FE', duration: 2.3, delay: 2.4, trailLength: 0.36 },
     ];
 
-    const arcPulses: Array<{
+    interface JumpingBeam {
+      fromId: string;
+      toId: string;
       curve: THREE.QuadraticBezierCurve3;
-      pulseMesh: THREE.Mesh;
-      offset: number;
-      speed: number;
-    }> = [];
+      color: THREE.Color;
+      headColor: THREE.Color;
+      duration: number;
+      delay: number;
+      trailLength: number;
+      // Three.js dynamic objects
+      headMesh: THREE.Mesh;
+      headGlowMesh: THREE.Mesh;
+      trailBeads: THREE.Mesh[];
+      trailLine: THREE.Line;
+      posAttr: THREE.BufferAttribute;
+      colAttr: THREE.BufferAttribute;
+      trailCount: number;
+    }
 
+    const jumpingBeams: JumpingBeam[] = [];
     const arcGroup = new THREE.Group();
     globeGroup.add(arcGroup);
 
-    arcPairs.forEach((pair, idx) => {
-      const fromOffice = CLYPTUS_OFFICES.find((o) => o.id === pair.from)!;
-      const toOffice = CLYPTUS_OFFICES.find((o) => o.id === pair.to)!;
+    jumpingRoutes.forEach((route) => {
+      const fromOffice = CLYPTUS_OFFICES.find((o) => o.id === route.from)!;
+      const toOffice = CLYPTUS_OFFICES.find((o) => o.id === route.to)!;
 
       const pA = latLonToVector3(fromOffice.lat, fromOffice.lon, GLOBE_RADIUS);
       const pB = latLonToVector3(toOffice.lat, toOffice.lon, GLOBE_RADIUS);
 
       const dist = pA.distanceTo(pB);
-      // Lift midpoint outward based on distance to create a realistic curved trajectory
+      // Parabolic jump altitude proportional to distance
       const mid = pA.clone().add(pB).multiplyScalar(0.5);
-      const midLift = Math.max(7, dist * 0.28);
+      const midLift = Math.max(9, dist * 0.30);
       mid.normalize().multiplyScalar(GLOBE_RADIUS + midLift);
 
       const curve = new THREE.QuadraticBezierCurve3(pA, mid, pB);
-      const points = curve.getPoints(50);
-      const curveGeo = new THREE.BufferGeometry().setFromPoints(points);
-      const curveMat = new THREE.LineBasicMaterial({
-        color: new THREE.Color(pair.color),
-        transparent: true,
-        opacity: 0.55,
-      });
-      const curveLine = new THREE.Line(curveGeo, curveMat);
-      arcGroup.add(curveLine);
 
-      // Glowing traveling light pulse
-      const pulseGeo = new THREE.SphereGeometry(1.2, 12, 12);
-      const pulseMat = new THREE.MeshBasicMaterial({
-        color: pair.color,
+      // Background subtle guide line showing orbital arc
+      const guidePoints = curve.getPoints(50);
+      const guideGeo = new THREE.BufferGeometry().setFromPoints(guidePoints);
+      const guideMat = new THREE.LineBasicMaterial({
+        color: new THREE.Color(route.headColor),
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.32,
       });
-      const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
-      arcGroup.add(pulseMesh);
+      const guideLine = new THREE.Line(guideGeo, guideMat);
+      arcGroup.add(guideLine);
 
-      arcPulses.push({
+      // Dynamic Jumping Beam Trail Geometry (32 vertex points along the active curve slice)
+      const trailCount = 32;
+      const positions = new Float32Array(trailCount * 3);
+      const colors = new Float32Array(trailCount * 3);
+
+      const trailGeo = new THREE.BufferGeometry();
+      const posAttr = new THREE.BufferAttribute(positions, 3);
+      const colAttr = new THREE.BufferAttribute(colors, 3);
+      trailGeo.setAttribute('position', posAttr);
+      trailGeo.setAttribute('color', colAttr);
+
+      const trailMat = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const trailLine = new THREE.Line(trailGeo, trailMat);
+      arcGroup.add(trailLine);
+
+      // Dynamic Trailing Energy Beads along the jumping beam
+      const trailBeads: THREE.Mesh[] = [];
+      const numBeads = 7;
+      for (let b = 0; b < numBeads; b++) {
+        const beadFrac = (b + 1) / numBeads;
+        const beadGeo = new THREE.SphereGeometry(1.1 + beadFrac * 1.1, 12, 12);
+        const beadMat = new THREE.MeshBasicMaterial({
+          color: new THREE.Color(route.headColor),
+          transparent: true,
+          opacity: 0.35 + beadFrac * 0.55,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const beadMesh = new THREE.Mesh(beadGeo, beadMat);
+        beadMesh.visible = false;
+        arcGroup.add(beadMesh);
+        trailBeads.push(beadMesh);
+      }
+
+      // Jumping Head Core (Brilliant white core)
+      const headCoreGeo = new THREE.SphereGeometry(1.8, 16, 16);
+      const headCoreMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+      });
+      const headMesh = new THREE.Mesh(headCoreGeo, headCoreMat);
+      arcGroup.add(headMesh);
+
+      // Jumping Head Outer Glow Halo (Vibrant colored aura)
+      const headHaloGeo = new THREE.SphereGeometry(3.6, 16, 16);
+      const headHaloMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(route.headColor),
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const headGlowMesh = new THREE.Mesh(headHaloGeo, headHaloMat);
+      arcGroup.add(headGlowMesh);
+
+      jumpingBeams.push({
+        fromId: route.from,
+        toId: route.to,
         curve,
-        pulseMesh,
-        offset: idx * 0.33,
-        speed: pair.speed,
+        color: new THREE.Color(route.color),
+        headColor: new THREE.Color(route.headColor),
+        duration: route.duration,
+        delay: route.delay,
+        trailLength: route.trailLength,
+        headMesh,
+        headGlowMesh,
+        trailBeads,
+        trailLine,
+        posAttr,
+        colAttr,
+        trailCount,
       });
     });
 
@@ -584,20 +663,112 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       globeGroup.rotation.y = state.currentRotY + state.mouseX;
       globeGroup.rotation.x = state.currentRotX + state.mouseY;
 
-      // Animate marker ripple rings (scale 1.0 -> 2.5, fading opacity)
+      // Animate marker ripple rings and landing impact flashes
       markerObjects.forEach((m, idx) => {
+        m.impactIntensity = Math.max(0, m.impactIntensity - 0.035);
         const speed = 1.6;
         const phase = (elapsedTime * speed + idx * 0.5) % 1;
-        const currentScale = 1.0 + phase * 1.5;
+        const baseScale = 1.0 + phase * 1.5;
+        const impactScale = 1.0 + m.impactIntensity * 2.0;
+        const currentScale = Math.max(baseScale, impactScale);
+
         m.ringMesh.scale.set(currentScale, currentScale, currentScale);
-        (m.ringMesh.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1.0 - phase);
+        const baseAlpha = Math.max(0, 1.0 - phase) * 0.7;
+        const impactAlpha = m.impactIntensity * 0.95;
+        (m.ringMesh.material as THREE.MeshBasicMaterial).opacity = Math.max(baseAlpha, impactAlpha);
       });
 
-      // Animate curved traveling light pulses along arcs
-      arcPulses.forEach((arc) => {
-        const t = (elapsedTime * arc.speed + arc.offset) % 1;
-        const pt = arc.curve.getPoint(t);
-        arc.pulseMesh.position.copy(pt);
+      // Animate dynamic jumping lines hopping from branch to branch
+      jumpingBeams.forEach((beam) => {
+        const cycleDuration = beam.duration + 0.55; // jump time + pause before launching next
+        const localTime = (elapsedTime + beam.delay) % cycleDuration;
+        const isJumping = localTime < beam.duration;
+
+        if (!isJumping) {
+          beam.headMesh.visible = false;
+          beam.headGlowMesh.visible = false;
+          beam.trailBeads.forEach((b) => {
+            b.visible = false;
+          });
+          const posArr = beam.posAttr.array as Float32Array;
+          posArr.fill(0);
+          beam.posAttr.needsUpdate = true;
+          return;
+        }
+
+        beam.headMesh.visible = true;
+        beam.headGlowMesh.visible = true;
+
+        // Progress 0 to 1
+        const progress = localTime / beam.duration;
+
+        // Ballistic parabolic jump easing: slow launch -> rapid mid-flight arc -> smooth dive landing
+        const easedT =
+          progress < 0.5
+            ? 2 * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        // Position head at current point along curve
+        const headPoint = beam.curve.getPoint(easedT);
+        beam.headMesh.position.copy(headPoint);
+        beam.headGlowMesh.position.copy(headPoint);
+
+        // Pulsing head scale for high energy
+        const pulse = 1.0 + Math.sin(elapsedTime * 18) * 0.22;
+        beam.headMesh.scale.set(pulse, pulse, pulse);
+        beam.headGlowMesh.scale.set(pulse * 1.5, pulse * 1.5, pulse * 1.5);
+
+        // Animate volumetric trailing energy nodes along the jumping beam
+        beam.trailBeads.forEach((bead, idx) => {
+          const bFrac = (idx + 1) / 7;
+          const s = Math.max(0, Math.min(1, easedT - beam.trailLength * (1 - bFrac)));
+          if (s > 0.005 && s < 0.995) {
+            bead.visible = true;
+            bead.position.copy(beam.curve.getPoint(s));
+            const bScale = (0.65 + bFrac * 0.45) * pulse;
+            bead.scale.set(bScale, bScale, bScale);
+          } else {
+            bead.visible = false;
+          }
+        });
+
+        // Update jumping line trail geometry (trailing elastic curved ribbon)
+        const count = beam.trailCount;
+        const posArr = beam.posAttr.array as Float32Array;
+        const colArr = beam.colAttr.array as Float32Array;
+
+        for (let i = 0; i < count; i++) {
+          const frac = i / (count - 1); // 0 at tail, 1 at head
+          // Parameter along curve
+          const s = Math.max(0, Math.min(1, easedT - beam.trailLength * (1 - frac)));
+          const pt = beam.curve.getPoint(s);
+
+          posArr[i * 3] = pt.x;
+          posArr[i * 3 + 1] = pt.y;
+          posArr[i * 3 + 2] = pt.z;
+
+          // Power alpha curve: bright near head, tapering smoothly at tail
+          const alpha = Math.pow(frac, 1.8);
+          // Color transition: blends from branch color at tail to luminous head color
+          const c = beam.color.clone().lerp(beam.headColor, frac);
+          colArr[i * 3] = c.r * alpha;
+          colArr[i * 3 + 1] = c.g * alpha;
+          colArr[i * 3 + 2] = c.b * alpha;
+        }
+
+        beam.posAttr.needsUpdate = true;
+        beam.colAttr.needsUpdate = true;
+
+        // When jumping line arrives at destination (progress > 0.88), trigger landing impact
+        if (progress > 0.88) {
+          const destMarker = markerObjects.find((m) => m.id === beam.toId);
+          if (destMarker) {
+            destMarker.impactIntensity = Math.max(
+              destMarker.impactIntensity,
+              1.0 - (progress - 0.88) / 0.12
+            );
+          }
+        }
       });
 
       // Project 3D marker positions to 2D screen coordinates for UI badges & tooltips
