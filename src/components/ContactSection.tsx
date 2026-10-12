@@ -1,281 +1,506 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, Globe, Building2, UserCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  CheckCircle2,
+  Globe2,
+  Building2,
+  Compass,
+  ExternalLink,
+  ShieldCheck,
+  Clock,
+  Briefcase
+} from 'lucide-react';
+import { ClyptusInteractiveGlobe, CLYPTUS_OFFICES } from './ClyptusInteractiveGlobe';
 
 export const ContactSection: React.FC = () => {
+  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'bengaluru' | 'dubai'>('hyderabad');
+  const [hoveredOfficeId, setHoveredOfficeId] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    service: 'AI Solutions',
+    service: 'AI Solutions & Agentic Pipelines',
     message: '',
   });
+
+  const selectedOffice = CLYPTUS_OFFICES.find((o) => o.id === selectedOfficeId) || CLYPTUS_OFFICES[0];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);
     setTimeout(() => {
       setFormSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', service: 'AI Solutions', message: '' });
-    }, 4000);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        service: 'AI Solutions & Agentic Pipelines',
+        message: '',
+      });
+    }, 5000);
   };
 
-  const globalOffices = [
-    {
-      country: 'INDIA (Head Office)',
-      city: 'Hyderabad',
-      address: '12A01A 13th Floor, Manjeera Trinity Corporate, JNTU - Hitech City Road, Kukatpally Housing Board Colony, Kukatpally, Hyderabad, Telangana 500072',
-      emails: ['hr.india@clyptus.com', 'Sales@clyptus.com'],
-      phones: ['+91 7799988139 (Sales)', '+91 9100115466 (HR)', '+91 7331161699 (HR)'],
-      color: 'from-blue-600 to-indigo-600',
-      badge: 'HEADQUARTERS',
-    },
-    {
-      country: 'UNITED ARAB EMIRATES',
-      city: 'Dubai',
-      address: '101 Sheikh Zayed Rd - Trade Centre - DIFC - Dubai - United Arab Emirates',
-      emails: ['hr.uae@clyptus.com', 'shabana.shaik@clyptus.com'],
-      phones: ['+971 504836190'],
-      color: 'from-emerald-600 to-teal-600',
-      badge: 'UAE OFFICE',
-    },
-    {
-      country: 'UNITED STATES',
-      city: 'California',
-      address: '45627 Basswood Ct, Temecula, California 92592',
-      emails: ['hr.usa@clyptus.com', 'pavan.sunkara@clyptus.com'],
-      phones: ['+1 (480) 427-6373'],
-      color: 'from-purple-600 to-indigo-600',
-      badge: 'USA OFFICE',
-    },
-  ];
-
   const regionalOffices = [
-    { city: 'Vijayawada', address: 'Corporate Centre, MG Road, Main Road, beside Chandana Grand, Brindavan Colony, Vijayawada, AP 520010' },
-    { city: 'Bengaluru', address: 'No. 3, 7th Cross, Venkateswara Layout, Bangalore, Karnataka 560068' },
+    {
+      city: 'Vijayawada Delivery Hub',
+      address: 'Corporate Centre, MG Road, Main Road, beside Chandana Grand, Brindavan Colony, Vijayawada, AP 520010',
+      type: 'Regional Delivery & Support Center',
+    },
+    {
+      city: 'Bengaluru Tech Center',
+      address: 'No. 3, 7th Cross, Venkateswara Layout, Bangalore, Karnataka 560068',
+      type: 'Cloud ERP & AI Development Lab',
+    },
   ];
 
   return (
-    <section id="contact" className="w-full bg-slate-50 py-20 px-4 sm:px-8 lg:px-16 border-t border-slate-200 select-none relative">
-      <div className="max-w-7xl mx-auto flex flex-col gap-16">
+    <section
+      id="contact"
+      className="w-full min-h-screen bg-gradient-to-b from-white via-slate-50 to-sky-50/30 py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-12 select-none relative overflow-hidden"
+    >
+      {/* Background Soft Atmospheric Glow Gradients */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-sky-200/25 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-1/3 left-10 w-[500px] h-[500px] bg-indigo-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
+
+      <div className="max-w-7xl mx-auto flex flex-col gap-12 sm:gap-16">
         
-        {/* Header Title */}
-        <div className="text-center flex flex-col items-center gap-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono text-sky-700 font-bold uppercase shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
-            GET IN TOUCH WITH CLYPTUS
+        {/* Top Header Section */}
+        <div className="text-center flex flex-col items-center gap-3.5 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-sky-200/80 text-xs font-mono text-sky-700 font-bold uppercase shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+            GLOBAL ENTERPRISE CONSULTING & 3D INTERACTIVE NETWORK
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-            Interested in Discussing Your <br />
+
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
+            Let’s Build Something <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              IT & AI Support Needs?
+              Great Together
             </span>
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base max-w-2xl font-medium">
-            Reach out directly to our global sales and talent management teams or visit one of our international offices.
+          </h1>
+
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
+            Connect directly with our engineering, SAP ERP, and talent leaders across India and the Middle East. Explore our global offices in real-time on the 3D globe.
           </p>
         </div>
 
-        {/* Global Contacts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {globalOffices.map((office, idx) => (
-            <div
-              key={idx}
-              className="group relative flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-sky-300 transition-all duration-300"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`text-[10px] font-mono font-extrabold px-2.5 py-1 rounded-full text-white bg-gradient-to-r ${office.color} shadow-xs`}>
-                    {office.badge}
-                  </span>
-                  <Globe className="w-5 h-5 text-slate-400 group-hover:text-sky-600 transition-colors" />
-                </div>
-
-                <h3 className="text-xl font-extrabold text-slate-900 mb-1">
-                  {office.city}
-                </h3>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">
-                  {office.country}
-                </p>
-
-                <div className="flex items-start gap-2.5 text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-                  <MapPin className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                  <span>{office.address}</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
-                {/* Emails */}
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold">EMAIL US</span>
-                  {office.emails.map((email, eIdx) => (
-                    <a
-                      key={eIdx}
-                      href={`mailto:${email}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-sky-600 transition-colors"
-                    >
-                      <Mail className="w-3.5 h-3.5 text-sky-600" />
-                      <span>{email}</span>
-                    </a>
-                  ))}
-                </div>
-
-                {/* Phones */}
-                <div className="flex flex-col gap-1 mt-2">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 font-semibold">CALL US</span>
-                  {office.phones.map((phone, pIdx) => (
-                    <a
-                      key={pIdx}
-                      href={`tel:${phone.split(' ')[0]}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-sky-600 transition-colors"
-                    >
-                      <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>{phone}</span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Regional Offices Across India */}
-        <div className="p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sky-50 text-sky-600 border border-sky-100">
-              <Building2 className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-extrabold text-slate-900">Offices Across India</h3>
-              <p className="text-xs text-slate-500 font-medium">Regional delivery & development centers</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {regionalOffices.map((reg, rIdx) => (
-              <div key={rIdx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 flex flex-col gap-1.5">
-                <span className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-sky-600" />
-                  {reg.city}
-                </span>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  {reg.address}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Direct Contact Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-2xl">
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-sky-400 text-xs font-mono font-bold tracking-wider uppercase backdrop-blur-md w-fit">
-              <UserCheck className="w-3.5 h-3.5" />
-              DIRECT CONSULTATION
-            </div>
-            <h3 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-snug">
-              Send us a message and our experts will respond in 24 hours.
-            </h3>
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-              Whether you require SAP implementation, IT staffing augmentation, or generative AI workflows, Clyptus engineered solutions deliver results.
-            </p>
+        {/* MAIN SPLIT LAYOUT: LEFT CONTENT & FORM | RIGHT 3D ROTATING GLOBE */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
+          {/* LEFT COLUMN: INTRO, BRANCH SELECTOR, ACTIVE LOCATION CARD & CONTACT FORM */}
+          <div className="lg:col-span-6 flex flex-col gap-6 order-2 lg:order-1">
             
-            <div className="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2 text-xs text-slate-300">
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-sky-400" />
-                <span>Sales: Sales@clyptus.com</span>
+            {/* Office Switcher Tabs */}
+            <div className="p-2 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-1.5">
+              <span className="text-[11px] font-mono font-bold text-slate-500 uppercase px-3 py-1 flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-sky-600" />
+                Select Hub:
+              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {CLYPTUS_OFFICES.map((office) => {
+                  const isSelected = selectedOfficeId === office.id;
+                  return (
+                    <button
+                      key={office.id}
+                      onClick={() => setSelectedOfficeId(office.id)}
+                      onMouseEnter={() => setHoveredOfficeId(office.id)}
+                      onMouseLeave={() => setHoveredOfficeId(null)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-300'
+                          : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
+                      }`}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: isSelected ? '#ffffff' : office.color }}
+                      />
+                      <span>{office.city}</span>
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-emerald-400" />
-                <span>Direct Hotline: +91 7799988139</span>
+            </div>
+
+            {/* Active Office Glassmorphism Detail Card */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedOffice.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25 }}
+                className="p-6 sm:p-7 rounded-3xl bg-white/90 backdrop-blur-md border border-sky-100/80 shadow-lg hover:shadow-xl transition-all relative overflow-hidden"
+              >
+                {/* Accent Corner Glow */}
+                <div
+                  className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl opacity-20 pointer-events-none"
+                  style={{ backgroundColor: selectedOffice.color }}
+                />
+
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <span className="inline-block text-[10px] font-mono font-extrabold px-2.5 py-1 rounded-full text-sky-700 bg-sky-50 border border-sky-200 uppercase mb-2">
+                      {selectedOffice.badge}
+                    </span>
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                      {selectedOffice.label}
+                    </h2>
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">
+                      {selectedOffice.description}
+                    </p>
+                  </div>
+
+                  <a
+                    href={selectedOffice.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold transition-all border border-sky-200 shrink-0"
+                  >
+                    <span>Get Directions</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                {/* Office Details */}
+                <div className="flex flex-col gap-3 pt-3 border-t border-slate-100 text-xs text-slate-700 font-medium">
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                    <span className="leading-relaxed">{selectedOffice.address}</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">Email Channels</span>
+                      {selectedOffice.emails.map((email, idx) => (
+                        <a
+                          key={idx}
+                          href={`mailto:${email}`}
+                          className="inline-flex items-center gap-1.5 font-bold text-slate-800 hover:text-sky-600 transition-colors"
+                        >
+                          <Mail className="w-3.5 h-3.5 text-sky-600" />
+                          <span>{email}</span>
+                        </a>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">Direct Phone</span>
+                      {selectedOffice.phones.map((phone, idx) => (
+                        <a
+                          key={idx}
+                          href={`tel:${phone.split(' ')[0]}`}
+                          className="inline-flex items-center gap-1.5 font-bold text-slate-800 hover:text-sky-600 transition-colors"
+                        >
+                          <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>{phone}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Direct Consultation Contact Form */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
+                    Start a Conversation
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Our technical and staffing consultants respond within 24 business hours.
+                  </p>
+                </div>
+                <div className="p-2 rounded-xl bg-sky-50 text-sky-600 border border-sky-100">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+              </div>
+
+              {formSubmitted ? (
+                <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 shadow-sm animate-bounce">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-xl font-black text-slate-900">Message Received!</h4>
+                  <p className="text-xs text-slate-600 max-w-sm">
+                    Thank you for reaching out. A senior Clyptus solution architect will review your project details and contact you promptly.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Your Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="John Doe"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Corporate Email</label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="john@enterprise.com"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="+91 9876543210"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Practice / Solution</label>
+                      <select
+                        value={formData.service}
+                        onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none bg-white transition-all"
+                      >
+                        <option value="AI Solutions & Agentic Pipelines">AI Solutions & Agentic Pipelines</option>
+                        <option value="SAP S/4HANA & BTP Consulting">SAP S/4HANA & BTP Consulting</option>
+                        <option value="IT Staffing & Niche Augmentation">IT Staffing & Niche Augmentation</option>
+                        <option value="Cloud Migration & DevOps">Cloud Migration & DevOps</option>
+                        <option value="Enterprise Architecture Advisory">Enterprise Architecture Advisory</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Project Scope or Inquiries</label>
+                    <textarea
+                      rows={3}
+                      required
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      placeholder="Outline your timeline, current software ecosystem, or headcount requirements..."
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none resize-none transition-all"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-sky-700 hover:from-sky-700 hover:to-indigo-700 text-white font-extrabold text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                  >
+                    <span>Start a Conversation</span>
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              )}
+            </div>
+
+          </div>
+
+          {/* RIGHT COLUMN: LARGE INTERACTIVE 3D GLOBE CONTAINER */}
+          <div className="lg:col-span-6 flex flex-col gap-4 order-1 lg:order-2 sticky top-24">
+            <div className="relative w-full rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-slate-50/80 border border-sky-100 shadow-xl overflow-hidden min-h-[460px] sm:min-h-[560px] lg:min-h-[640px] flex items-center justify-center">
+              
+              {/* Subtle background circular glow behind Earth */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[380px] sm:w-[460px] h-[380px] sm:h-[460px] rounded-full bg-gradient-to-tr from-sky-200/30 to-indigo-200/20 blur-2xl" />
+              </div>
+
+              {/* The 3D Interactive Three.js Globe */}
+              <ClyptusInteractiveGlobe
+                selectedLocationId={selectedOfficeId}
+                onSelectLocation={(id) => setSelectedOfficeId(id)}
+                hoveredLocationId={hoveredOfficeId}
+                onHoverLocation={(id) => setHoveredOfficeId(id)}
+              />
+
+              {/* Globe Informational Caption Footer */}
+              <div className="absolute bottom-3 left-4 right-28 z-20 pointer-events-none hidden sm:flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="truncate">Active hubs: Hyderabad (HQ) • Bengaluru • Dubai</span>
+              </div>
+            </div>
+
+            {/* Quick Guarantees Ribbon */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
+              <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center">
+                <Clock className="w-4 h-4 text-sky-600 mb-1" />
+                <span className="text-[11px] font-extrabold text-slate-800">&lt; 24h Response</span>
+                <span className="text-[9px] text-slate-400">Guaranteed SLA</span>
+              </div>
+              <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center">
+                <Globe2 className="w-4 h-4 text-indigo-600 mb-1" />
+                <span className="text-[11px] font-extrabold text-slate-800">3 Global Hubs</span>
+                <span className="text-[9px] text-slate-400">India & Middle East</span>
+              </div>
+              <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center">
+                <Briefcase className="w-4 h-4 text-emerald-600 mb-1" />
+                <span className="text-[11px] font-extrabold text-slate-800">Direct NDA</span>
+                <span className="text-[9px] text-slate-400">Confidentiality</span>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-7 bg-white text-slate-900 p-6 sm:p-8 rounded-2xl shadow-lg">
-            {formSubmitted ? (
-              <div className="py-12 flex flex-col items-center justify-center text-center gap-3">
-                <CheckCircle2 className="w-12 h-12 text-emerald-500 animate-bounce" />
-                <h4 className="text-xl font-extrabold text-slate-900">Thank You!</h4>
-                <p className="text-xs text-slate-600">Your inquiry has been received. A Clyptus specialist will contact you shortly.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Your Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="John Doe"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
-                    />
-                  </div>
+        </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="john@company.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+91 9876543210"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Required Service</label>
-                    <select
-                      value={formData.service}
-                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none bg-white"
-                    >
-                      <option value="AI Solutions">AI Solutions</option>
-                      <option value="SAP Consulting">SAP Consulting</option>
-                      <option value="IT Recruiting">IT Recruiting</option>
-                      <option value="General Support">General Support</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Message</label>
-                  <textarea
-                    rows={3}
-                    required
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Tell us about your project or staffing requirement..."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2"
-                >
-                  <span>Submit Inquiry</span>
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </form>
-            )}
+        {/* BOTTOM SECTION: ALL 3 GLOBAL OFFICES CARDS IN DETAIL */}
+        <div className="pt-8 border-t border-slate-200/80 flex flex-col gap-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Global Corporate Directory
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                Comprehensive physical addresses and direct executive channels
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-mono text-sky-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>All offices operational</span>
+            </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {CLYPTUS_OFFICES.map((office) => {
+              const isSelected = selectedOfficeId === office.id;
+              return (
+                <div
+                  key={office.id}
+                  onClick={() => setSelectedOfficeId(office.id)}
+                  className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white border transition-all duration-300 cursor-pointer ${
+                    isSelected
+                      ? 'border-sky-400 ring-2 ring-sky-200 shadow-xl'
+                      : 'border-slate-200/90 shadow-sm hover:shadow-lg hover:border-sky-300'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-mono font-extrabold px-2.5 py-1 rounded-full text-white bg-slate-900 shadow-xs">
+                        {office.badge}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOfficeId(office.id);
+                        }}
+                        title="Rotate globe to this office"
+                        className="p-1 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+                      >
+                        <Compass className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <h4 className="text-lg font-extrabold text-slate-900 mb-0.5">
+                      {office.city}
+                    </h4>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">
+                      {office.country}
+                    </p>
+
+                    <div className="flex items-start gap-2 text-xs text-slate-600 leading-relaxed mb-4 font-medium">
+                      <MapPin className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                      <span>{office.address}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] font-mono uppercase text-slate-400 font-bold">Email Contacts</span>
+                      {office.emails.map((email, eIdx) => (
+                        <a
+                          key={eIdx}
+                          href={`mailto:${email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-sky-600 transition-colors"
+                        >
+                          <Mail className="w-3 h-3 text-sky-600" />
+                          <span className="truncate">{email}</span>
+                        </a>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] font-mono uppercase text-slate-400 font-bold">Call Contacts</span>
+                      {office.phones.map((phone, pIdx) => (
+                        <a
+                          key={pIdx}
+                          href={`tel:${phone.split(' ')[0]}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-sky-600 transition-colors"
+                        >
+                          <Phone className="w-3 h-3 text-emerald-600" />
+                          <span className="truncate">{phone}</span>
+                        </a>
+                      ))}
+                    </div>
+
+                    <a
+                      href={office.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-2 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-50 hover:bg-sky-50 text-slate-700 hover:text-sky-700 text-xs font-bold border border-slate-200 transition-colors"
+                    >
+                      <span>Get Directions</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Regional Delivery Hubs in India */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-sky-50 text-sky-600 border border-sky-100">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-base sm:text-lg font-extrabold text-slate-900">
+                  Regional Delivery & Specialist Hubs
+                </h4>
+                <p className="text-xs text-slate-500 font-medium">
+                  Extended client engineering & development centers across India
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {regionalOffices.map((reg, rIdx) => (
+                <div
+                  key={rIdx}
+                  className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex flex-col gap-1"
+                >
+                  <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-sky-600" />
+                    {reg.city}
+                  </span>
+                  <span className="text-[10px] font-mono text-sky-700 font-bold uppercase">{reg.type}</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium mt-1">
+                    {reg.address}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
 
       </div>
