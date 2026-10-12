@@ -172,7 +172,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .arcColor('color')
           .arcDashLength(0.4)
           .arcDashGap(0.25)
-          .arcDashAnimateTime(reduceMotion ? 0 : 2200)
+          .arcDashAnimateTime(reduceMotion ? 0 : 1500)
           .arcStroke(0.55)
           .arcAltitude(0.25)
           .pointsData(LOCATIONS)
@@ -195,7 +195,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
 
         const controls = world.controls();
         controls.autoRotate = !reduceMotion;
-        controls.autoRotateSpeed = 0.6;
+        controls.autoRotateSpeed = 2.5;
         controls.enableZoom = false;
 
         worldRef.current = world;
