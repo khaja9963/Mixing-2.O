@@ -14,6 +14,7 @@ import {
   Mail,
   ChevronRight 
 } from 'lucide-react';
+import { ClyptusLogo } from './ClyptusLogo';
 
 interface HeaderProps {
   activePage: string;
@@ -158,10 +159,8 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center group text-left py-0.5 cursor-pointer focus:outline-none"
             aria-label="Clyptus Home"
           >
-            <img 
-              src="/logo.png" 
-              alt="Clyptus Logo" 
-              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all duration-300" 
+            <ClyptusLogo 
+              className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]" 
             />
           </motion.button>
         </div>

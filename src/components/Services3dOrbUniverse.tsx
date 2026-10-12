@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Database, Users, Cpu, X, ArrowUpRight, Sparkles, ShieldCheck, Layers } from 'lucide-react';
+import { ClyptusLogo } from './ClyptusLogo';
 
 interface ServiceCategory {
   id: string;
@@ -271,7 +272,7 @@ export const Services3dOrbUniverse: React.FC<Services3dOrbUniverseProps> = ({
           {/* Central Logo & Label */}
           <div className="relative z-10 flex flex-col items-center text-center gap-1">
             <div className="w-16 h-16 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center p-2 shadow-md mb-1 group-hover:rotate-12 transition-transform overflow-hidden">
-              <img src="/logo.png" alt="Clyptus Logo" className="w-full h-full object-contain" />
+              <ClyptusLogo className="w-full h-full object-contain" />
             </div>
             <span className="text-sm font-black tracking-tight text-white uppercase">SERVICES</span>
           </div>
