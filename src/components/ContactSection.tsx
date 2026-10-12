@@ -329,12 +329,6 @@ export const ContactSection: React.FC = () => {
                 hoveredLocationId={hoveredOfficeId}
                 onHoverLocation={(id) => setHoveredOfficeId(id)}
               />
-
-              {/* Globe Informational Caption Footer */}
-              <div className="absolute bottom-3 left-4 right-28 z-20 pointer-events-none hidden sm:flex items-center gap-2 text-[10px] text-slate-500 font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span className="truncate">Active hubs: Hyderabad (HQ) • Bengaluru • Dubai</span>
-              </div>
             </div>
 
             {/* Quick Guarantees Ribbon */}

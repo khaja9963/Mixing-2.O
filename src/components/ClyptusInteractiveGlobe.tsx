@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { Play, Pause, RotateCcw, Compass, Sparkles, ArrowRight } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 
 export interface OfficeLocation {
   id: 'hyderabad' | 'bengaluru' | 'dubai';
@@ -100,18 +100,13 @@ interface ClyptusInteractiveGlobeProps {
 export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = ({
   selectedLocationId,
   onSelectLocation,
-  hoveredLocationId,
+  hoveredLocationId: _hoveredLocationId,
   onHoverLocation,
   className = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isRotating, setIsRotating] = useState<boolean>(true);
   const [isWebGLSupported, setIsWebGLSupported] = useState<boolean>(true);
-  const [screenCoords, setScreenCoords] = useState<Record<string, { x: number; y: number; visible: boolean }>>({});
-  const [internalHover, setInternalHover] = useState<string | null>(null);
-
-  // Active hover either from props or internal
-  const activeHoverId = hoveredLocationId ?? internalHover;
 
   // Animation & Three.js state references
   const animStateRef = useRef({
@@ -161,7 +156,6 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
   const handleMouseLeave = useCallback(() => {
     animStateRef.current.targetMouseX = 0;
     animStateRef.current.targetMouseY = 0;
-    setInternalHover(null);
     onHoverLocation?.(null);
   }, [onHoverLocation]);
 
@@ -469,7 +463,6 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       // Three.js dynamic objects
       headMesh: THREE.Mesh;
       headGlowMesh: THREE.Mesh;
-      trailBeads: THREE.Mesh[];
       trailLine: THREE.Line;
       posAttr: THREE.BufferAttribute;
       colAttr: THREE.BufferAttribute;
@@ -499,9 +492,9 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       const guidePoints = curve.getPoints(50);
       const guideGeo = new THREE.BufferGeometry().setFromPoints(guidePoints);
       const guideMat = new THREE.LineBasicMaterial({
-        color: new THREE.Color(route.headColor),
+        color: new THREE.Color(route.color),
         transparent: true,
-        opacity: 0.32,
+        opacity: 0.22,
       });
       const guideLine = new THREE.Line(guideGeo, guideMat);
       arcGroup.add(guideLine);
@@ -526,27 +519,8 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       const trailLine = new THREE.Line(trailGeo, trailMat);
       arcGroup.add(trailLine);
 
-      // Dynamic Trailing Energy Beads along the jumping beam
-      const trailBeads: THREE.Mesh[] = [];
-      const numBeads = 7;
-      for (let b = 0; b < numBeads; b++) {
-        const beadFrac = (b + 1) / numBeads;
-        const beadGeo = new THREE.SphereGeometry(1.1 + beadFrac * 1.1, 12, 12);
-        const beadMat = new THREE.MeshBasicMaterial({
-          color: new THREE.Color(route.headColor),
-          transparent: true,
-          opacity: 0.35 + beadFrac * 0.55,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-        });
-        const beadMesh = new THREE.Mesh(beadGeo, beadMat);
-        beadMesh.visible = false;
-        arcGroup.add(beadMesh);
-        trailBeads.push(beadMesh);
-      }
-
       // Jumping Head Core (Brilliant white core)
-      const headCoreGeo = new THREE.SphereGeometry(1.8, 16, 16);
+      const headCoreGeo = new THREE.SphereGeometry(1.6, 16, 16);
       const headCoreMat = new THREE.MeshBasicMaterial({
         color: 0xffffff,
       });
@@ -554,11 +528,11 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       arcGroup.add(headMesh);
 
       // Jumping Head Outer Glow Halo (Vibrant colored aura)
-      const headHaloGeo = new THREE.SphereGeometry(3.6, 16, 16);
+      const headHaloGeo = new THREE.SphereGeometry(3.0, 16, 16);
       const headHaloMat = new THREE.MeshBasicMaterial({
         color: new THREE.Color(route.headColor),
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.85,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
@@ -576,7 +550,6 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         trailLength: route.trailLength,
         headMesh,
         headGlowMesh,
-        trailBeads,
         trailLine,
         posAttr,
         colAttr,
@@ -600,11 +573,9 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       if (intersects.length > 0) {
         const foundId = intersects[0].object.userData.officeId;
         renderer.domElement.style.cursor = 'pointer';
-        setInternalHover(foundId);
         onHoverLocation?.(foundId);
       } else {
         renderer.domElement.style.cursor = 'grab';
-        setInternalHover(null);
         onHoverLocation?.(null);
       }
     };
@@ -687,9 +658,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         if (!isJumping) {
           beam.headMesh.visible = false;
           beam.headGlowMesh.visible = false;
-          beam.trailBeads.forEach((b) => {
-            b.visible = false;
-          });
+          // Clear trail
           const posArr = beam.posAttr.array as Float32Array;
           posArr.fill(0);
           beam.posAttr.needsUpdate = true;
@@ -717,20 +686,6 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         const pulse = 1.0 + Math.sin(elapsedTime * 18) * 0.22;
         beam.headMesh.scale.set(pulse, pulse, pulse);
         beam.headGlowMesh.scale.set(pulse * 1.5, pulse * 1.5, pulse * 1.5);
-
-        // Animate volumetric trailing energy nodes along the jumping beam
-        beam.trailBeads.forEach((bead, idx) => {
-          const bFrac = (idx + 1) / 7;
-          const s = Math.max(0, Math.min(1, easedT - beam.trailLength * (1 - bFrac)));
-          if (s > 0.005 && s < 0.995) {
-            bead.visible = true;
-            bead.position.copy(beam.curve.getPoint(s));
-            const bScale = (0.65 + bFrac * 0.45) * pulse;
-            bead.scale.set(bScale, bScale, bScale);
-          } else {
-            bead.visible = false;
-          }
-        });
 
         // Update jumping line trail geometry (trailing elastic curved ribbon)
         const count = beam.trailCount;
@@ -771,34 +726,6 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         }
       });
 
-      // Project 3D marker positions to 2D screen coordinates for UI badges & tooltips
-      const newScreenCoords: Record<string, { x: number; y: number; visible: boolean }> = {};
-      const currentWidth = container.clientWidth || 600;
-      const currentHeight = container.clientHeight || 600;
-
-      markerObjects.forEach((m) => {
-        // Calculate world position after globe rotation
-        const worldPos = m.position.clone().applyMatrix4(globeGroup.matrixWorld);
-        const normalWorld = worldPos.clone().normalize();
-        const camDir = camera.position.clone().sub(worldPos).normalize();
-
-        // Check if marker is on the visible front hemisphere facing camera
-        const isFacingCamera = normalWorld.dot(camDir) > -0.05;
-
-        // Project to screen
-        const screenPos = worldPos.clone().project(camera);
-        const sx = ((screenPos.x + 1) / 2) * currentWidth;
-        const sy = ((-screenPos.y + 1) / 2) * currentHeight;
-
-        newScreenCoords[m.id] = {
-          x: sx,
-          y: sy,
-          visible: isFacingCamera && screenPos.z < 1.0,
-        };
-      });
-
-      setScreenCoords(newScreenCoords);
-
       renderer.render(scene, camera);
     };
 
@@ -830,95 +757,21 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     >
       {/* Fallback if WebGL is disabled */}
       {!isWebGLSupported && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-sky-50/80 backdrop-blur-sm rounded-3xl border border-sky-100">
-          <Compass className="w-12 h-12 text-sky-600 mb-3 animate-spin" />
-          <h4 className="text-lg font-bold text-slate-800">Clyptus Global Network</h4>
-          <p className="text-xs text-slate-600 max-w-sm mt-1">
-            Experience our international delivery hubs across Hyderabad, Bengaluru, and Dubai.
-          </p>
-        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-sky-50/80 backdrop-blur-sm rounded-3xl border border-sky-100" />
       )}
 
-      {/* Floating 2D Marker Overlay Tags Projected from 3D Globe */}
-      {CLYPTUS_OFFICES.map((office) => {
-        const coords = screenCoords[office.id];
-        if (!coords || !coords.visible) return null;
-
-        const isSelected = selectedLocationId === office.id;
-        const isHovered = activeHoverId === office.id;
-
-        return (
-          <div
-            key={office.id}
-            style={{
-              left: `${coords.x}px`,
-              top: `${coords.y}px`,
-              transform: 'translate(-50%, -130%)',
-            }}
-            className="absolute z-20 pointer-events-auto transition-all duration-200"
-          >
-            <button
-              onClick={() => onSelectLocation(office.id)}
-              onMouseEnter={() => {
-                setInternalHover(office.id);
-                onHoverLocation?.(office.id);
-              }}
-              onMouseLeave={() => {
-                setInternalHover(null);
-                onHoverLocation?.(null);
-              }}
-              className={`group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-lg backdrop-blur-md transition-all cursor-pointer ${
-                isSelected
-                  ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white ring-2 ring-sky-300 ring-offset-1 scale-105 shadow-sky-500/30'
-                  : isHovered
-                  ? 'bg-white text-sky-700 ring-2 ring-sky-400 scale-105 shadow-md'
-                  : 'bg-white/90 hover:bg-white text-slate-800 border border-slate-200/80 hover:shadow-md'
-              }`}
-            >
-              <span
-                className="w-2 h-2 rounded-full animate-ping shrink-0"
-                style={{ backgroundColor: office.color }}
-              />
-              <span className="truncate">{office.label}</span>
-              {isSelected && <Sparkles className="w-3 h-3 text-amber-300 ml-0.5 shrink-0" />}
-            </button>
-
-            {/* Floating Mini Hover Tooltip */}
-            {isHovered && !isSelected && (
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-56 p-2.5 bg-slate-900/95 text-white rounded-xl shadow-xl backdrop-blur-md border border-white/10 text-[10px] leading-snug animate-in fade-in zoom-in-95 pointer-events-none">
-                <div className="font-extrabold text-sky-400 uppercase tracking-wider text-[9px] mb-0.5">
-                  {office.badge}
-                </div>
-                <div className="font-semibold text-slate-200 line-clamp-2">
-                  {office.address}
-                </div>
-                <div className="mt-1 text-slate-400 flex items-center gap-1">
-                  <span>Click to inspect office</span>
-                  <ArrowRight className="w-2.5 h-2.5 text-sky-400" />
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
-
-      {/* Floating 3D Globe Control Panel (Auto-Rotate Toggle, Reset View) */}
-      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-white/85 backdrop-blur-md px-3 py-2 rounded-2xl border border-slate-200/80 shadow-md">
+      {/* Floating 3D Globe Control Panel (Icon-Only Rotate/Pause and Reset View) */}
+      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/80 shadow-md">
         <button
           onClick={() => setIsRotating(!isRotating)}
           title={isRotating ? 'Pause rotation' : 'Resume auto-rotation'}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 text-xs font-semibold transition-colors cursor-pointer"
+          aria-label={isRotating ? 'Pause rotation' : 'Resume auto-rotation'}
+          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
         >
           {isRotating ? (
-            <>
-              <Pause className="w-3.5 h-3.5 text-amber-500" />
-              <span>Pause</span>
-            </>
+            <Pause className="w-4 h-4 text-amber-500" />
           ) : (
-            <>
-              <Play className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Rotate</span>
-            </>
+            <Play className="w-4 h-4 text-emerald-500" />
           )}
         </button>
 
@@ -929,33 +782,11 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
             setIsRotating(true);
           }}
           title="Reset globe view"
-          className="p-1.5 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
+          aria-label="Reset globe view"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className="w-4 h-4" />
         </button>
-      </div>
-
-      {/* Location Quick Switcher Pills on Globe Top */}
-      <div className="absolute top-4 left-4 z-20 flex flex-wrap items-center gap-1.5 bg-white/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/80 shadow-xs max-w-[90%]">
-        <span className="text-[10px] font-mono font-bold text-slate-500 uppercase px-2 py-0.5">
-          BRANCHES:
-        </span>
-        {CLYPTUS_OFFICES.map((loc) => {
-          const isSelected = selectedLocationId === loc.id;
-          return (
-            <button
-              key={loc.id}
-              onClick={() => onSelectLocation(loc.id)}
-              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                isSelected
-                  ? 'bg-sky-600 text-white shadow-xs'
-                  : 'bg-slate-100/90 hover:bg-slate-200/90 text-slate-700'
-              }`}
-            >
-              {loc.city}
-            </button>
-          );
-        })}
       </div>
     </div>
   );
