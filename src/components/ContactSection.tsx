@@ -14,7 +14,7 @@ import {
 import { ClyptusInteractiveGlobe, CLYPTUS_OFFICES } from './ClyptusInteractiveGlobe';
 
 export const ContactSection: React.FC = () => {
-  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'dubai' | 'usa'>('hyderabad');
+  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'dubai' | 'usa' | null>('hyderabad');
   const [hoveredOfficeId, setHoveredOfficeId] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ export const ContactSection: React.FC = () => {
     message: '',
   });
 
-  const selectedOffice = CLYPTUS_OFFICES.find((o) => o.id === selectedOfficeId) || CLYPTUS_OFFICES[0];
+  const selectedOffice = (selectedOfficeId && CLYPTUS_OFFICES.find((o) => o.id === selectedOfficeId)) || CLYPTUS_OFFICES[0];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,17 +42,12 @@ export const ContactSection: React.FC = () => {
     }, 5000);
   };
 
-  const regionalOffices = [
-    {
-      city: 'Vijayawada Delivery Hub',
-      address: 'Corporate Centre, MG Road, Main Road, beside Chandana Grand, Brindavan Colony, Vijayawada, AP 520010',
-      type: 'Regional Delivery & Support Center',
-    },
-    {
-      city: 'Bengaluru Tech Center',
-      address: 'No. 3, 7th Cross, Venkateswara Layout, Bangalore, Karnataka 560068',
-      type: 'Cloud ERP & AI Development Lab',
-    },
+  const indianBranches = [
+    { name: 'Hyderabad', role: 'Head Office & Global Delivery', tag: 'HQ' },
+    { name: 'Bengaluru', role: 'AI & Cloud Development Lab', tag: 'Tech Hub' },
+    { name: 'Chennai', role: 'Enterprise Systems & Offshore', tag: 'Delivery' },
+    { name: 'Vijayawada', role: 'Regional Delivery Center', tag: 'Branch' },
+    { name: 'Indore', role: 'Central India Operations', tag: 'Branch' },
   ];
 
   return (
@@ -98,13 +93,25 @@ export const ContactSection: React.FC = () => {
                 Select Hub:
               </span>
               <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  id="hub-tab-overview"
+                  onClick={() => setSelectedOfficeId(null)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    selectedOfficeId === null
+                      ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-400'
+                      : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
+                  }`}
+                  title="Click to Zoom Out"
+                >
+                  <span>Overview (Zoom Out)</span>
+                </button>
                 {CLYPTUS_OFFICES.map((office) => {
                   const isSelected = selectedOfficeId === office.id;
                   return (
                     <button
                       key={office.id}
                       id={`hub-tab-${office.id}`}
-                      onClick={() => setSelectedOfficeId(office.id)}
+                      onClick={() => setSelectedOfficeId(isSelected ? null : office.id)}
                       onMouseEnter={() => setHoveredOfficeId(office.id)}
                       onMouseLeave={() => setHoveredOfficeId(null)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
@@ -200,6 +207,33 @@ export const ContactSection: React.FC = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* India Branches Strip (Hyderabad, Bengaluru, Chennai, Vijayawada, Indore) */}
+                  {selectedOffice.id === 'hyderabad' && (
+                    <div className="pt-3.5 border-t border-slate-100 flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono uppercase font-extrabold text-sky-700 tracking-wider flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping" />
+                          India Network & Delivery Branches (5 Hubs)
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400 font-bold">Live on 3D Globe</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                        {indianBranches.map((br) => (
+                          <div
+                            key={br.name}
+                            className="p-2 rounded-xl bg-slate-50/80 border border-slate-200/80 hover:border-sky-300 hover:bg-sky-50/50 transition-all text-left"
+                          >
+                            <div className="flex items-center justify-between gap-1 mb-0.5">
+                              <span className="text-xs font-bold text-slate-800">{br.name}</span>
+                              <span className="text-[9px] font-mono font-extrabold px-1.5 py-0.2 rounded bg-sky-100 text-sky-700">{br.tag}</span>
+                            </div>
+                            <span className="text-[10px] text-slate-500 leading-tight block truncate">{br.role}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -455,20 +489,20 @@ export const ContactSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {regionalOffices.map((reg, rIdx) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {indianBranches.map((branch, rIdx) => (
                 <div
                   key={rIdx}
-                  className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex flex-col gap-1"
+                  className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex flex-col gap-1.5 hover:border-sky-300 hover:bg-sky-50/30 transition-all"
                 >
-                  <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-sky-600" />
-                    {reg.city}
-                  </span>
-                  <span className="text-[10px] font-mono text-sky-700 font-bold uppercase">{reg.type}</span>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium mt-1">
-                    {reg.address}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-sky-600" />
+                      {branch.name}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-100 text-sky-700 font-bold uppercase">{branch.tag}</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-sky-700 font-bold uppercase">{branch.role}</span>
                 </div>
               ))}
             </div>

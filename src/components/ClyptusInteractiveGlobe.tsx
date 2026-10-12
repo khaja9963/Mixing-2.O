@@ -61,7 +61,7 @@ export const CLYPTUS_OFFICES: OfficeLocation[] = [
     address: '45627 Basswood Ct, Temecula, California 92592',
     emails: ['hr.usa@clyptus.com'],
     phones: ['+1 (480) 427-6373'],
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=45627+Basswood+Ct+Temecula+California+92592',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=45627+Basswood+Ct+Temecula+California 92592',
     description: 'North America Business Hub & Strategic Enterprise Accounts',
   },
 ];
@@ -73,18 +73,19 @@ const HIGHLIGHT: Record<string, string> = {
 };
 
 const LOCATIONS = [
-  { id: 'usa', name: 'USA — California', lat: 33.4936, lng: -117.1484, color: HIGHLIGHT.USA },
-  { id: 'dubai', name: 'UAE — Dubai', lat: 25.2137, lng: 55.2814, color: HIGHLIGHT.ARE },
-  { id: 'hyderabad', name: 'India — Hyderabad', lat: 17.45, lng: 78.38, color: HIGHLIGHT.IND },
+  { id: 'usa', name: 'USA — California', lat: 33.4936, lng: -117.1484, color: HIGHLIGHT.USA, radius: 0.48 },
+  { id: 'dubai', name: 'UAE — Dubai', lat: 25.2137, lng: 55.2814, color: HIGHLIGHT.ARE, radius: 0.48 },
+  { id: 'hyderabad', name: 'India — Hyderabad', lat: 17.45, lng: 78.38, color: HIGHLIGHT.IND, radius: 0.52 },
 ];
 
 const LABELS = [
-  { id: 'hyderabad', text: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, size: 1.1, color: '#ffffff' },
-  { id: 'dubai', text: 'Dubai (Hub)', lat: 25.2137, lng: 55.2814, size: 1.0, color: '#ffffff' },
-  { id: 'usa', text: 'California (Hub)', lat: 33.4936, lng: -117.1484, size: 1.0, color: '#ffffff' },
+  { id: 'hyderabad', text: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, size: 1.15, color: '#ffffff' },
+  { id: 'dubai', text: 'Dubai (Hub)', lat: 25.2137, lng: 55.2814, size: 1.05, color: '#ffffff' },
+  { id: 'usa', text: 'California (Hub)', lat: 33.4936, lng: -117.1484, size: 1.05, color: '#ffffff' },
 ];
 
 const RINGS = LOCATIONS.map((loc) => ({
+  id: loc.id,
   lat: loc.lat,
   lng: loc.lng,
   maxR: loc.id === 'hyderabad' ? 5.5 : 4.5,
@@ -93,33 +94,104 @@ const RINGS = LOCATIONS.map((loc) => ({
   color: loc.id === 'hyderabad' ? '#e8501e' : loc.color,
 }));
 
-const ARCS = [
+// Moving lines: all in luminous electric blue
+const BLUE_ARCS = [
   {
+    id: 'usa-dubai',
     startLat: LOCATIONS[0].lat,
     startLng: LOCATIONS[0].lng,
     endLat: LOCATIONS[1].lat,
     endLng: LOCATIONS[1].lng,
-    color: [HIGHLIGHT.USA, HIGHLIGHT.ARE],
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: false,
   },
   {
+    id: 'dubai-india',
     startLat: LOCATIONS[1].lat,
     startLng: LOCATIONS[1].lng,
     endLat: LOCATIONS[2].lat,
     endLng: LOCATIONS[2].lng,
-    color: [HIGHLIGHT.ARE, HIGHLIGHT.IND],
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: false,
   },
   {
+    id: 'india-usa',
     startLat: LOCATIONS[2].lat,
     startLng: LOCATIONS[2].lng,
     endLat: LOCATIONS[0].lat,
     endLng: LOCATIONS[0].lng,
-    color: [HIGHLIGHT.IND, HIGHLIGHT.USA],
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: false,
+  },
+];
+
+// 5 Branches in India: Hyderabad, Bengaluru, Chennai, Vijayawada, Indore
+export const INDIA_BRANCH_POINTS = [
+  { id: 'hyderabad', name: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, color: '#ffffff', radius: 0.58 },
+  { id: 'bengaluru', name: 'Bengaluru', lat: 12.9716, lng: 77.5946, color: '#38bdf8', radius: 0.44 },
+  { id: 'chennai', name: 'Chennai', lat: 13.0827, lng: 80.2707, color: '#38bdf8', radius: 0.44 },
+  { id: 'vijayawada', name: 'Vijayawada', lat: 16.5062, lng: 80.6480, color: '#38bdf8', radius: 0.44 },
+  { id: 'indore', name: 'Indore', lat: 22.7196, lng: 75.8577, color: '#38bdf8', radius: 0.44 },
+];
+
+export const INDIA_BRANCH_LABELS = [
+  { id: 'hyderabad', text: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, size: 1.25, color: '#ffffff' },
+  { id: 'bengaluru', text: 'Bengaluru', lat: 12.9716, lng: 77.5946, size: 1.05, color: '#e0f2fe' },
+  { id: 'chennai', text: 'Chennai', lat: 13.0827, lng: 80.2707, size: 1.05, color: '#e0f2fe' },
+  { id: 'vijayawada', text: 'Vijayawada', lat: 16.5062, lng: 80.6480, size: 1.05, color: '#e0f2fe' },
+  { id: 'indore', text: 'Indore', lat: 22.7196, lng: 75.8577, size: 1.05, color: '#e0f2fe' },
+];
+
+export const INDIA_BRANCH_RINGS = [
+  { id: 'hyderabad', lat: 17.45, lng: 78.38, maxR: 3.5, propagationSpeed: 2.2, repeatPeriod: 1200, color: '#e8501e' },
+  { id: 'bengaluru', lat: 12.9716, lng: 77.5946, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'chennai', lat: 13.0827, lng: 80.2707, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'vijayawada', lat: 16.5062, lng: 80.6480, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'indore', lat: 22.7196, lng: 75.8577, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+];
+
+export const INDIA_BRANCH_ARCS = [
+  {
+    id: 'hyd-bengaluru',
+    startLat: 17.45,
+    startLng: 78.38,
+    endLat: 12.9716,
+    endLng: 77.5946,
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: true,
+  },
+  {
+    id: 'hyd-chennai',
+    startLat: 17.45,
+    startLng: 78.38,
+    endLat: 13.0827,
+    endLng: 80.2707,
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: true,
+  },
+  {
+    id: 'hyd-vijayawada',
+    startLat: 17.45,
+    startLng: 78.38,
+    endLat: 16.5062,
+    endLng: 80.6480,
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: true,
+  },
+  {
+    id: 'hyd-indore',
+    startLat: 17.45,
+    startLng: 78.38,
+    endLat: 22.7196,
+    endLng: 75.8577,
+    color: ['#0284c7', '#38bdf8'],
+    isLocal: true,
   },
 ];
 
 interface ClyptusInteractiveGlobeProps {
-  selectedLocationId?: string | null;
-  onSelectLocation?: (id: 'hyderabad' | 'dubai' | 'usa') => void;
+  selectedLocationId?: 'hyderabad' | 'dubai' | 'usa' | null;
+  onSelectLocation?: (id: 'hyderabad' | 'dubai' | 'usa' | null) => void;
   hoveredLocationId?: string | null;
   onHoverLocation?: (id: string | null) => void;
   className?: string;
@@ -134,38 +206,33 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
   const worldRef = useRef<GlobeInstance | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const onSelectLocationRef = useRef(onSelectLocation);
+  const selectedLocationIdRef = useRef(selectedLocationId);
 
   useEffect(() => {
     onSelectLocationRef.current = onSelectLocation;
   }, [onSelectLocation]);
 
-  // Smooth cinematic camera zoom into location (India / Hyderabad, Dubai, USA)
   useEffect(() => {
+    selectedLocationIdRef.current = selectedLocationId;
+  }, [selectedLocationId]);
+
+  const handleResetOverview = () => {
+    if (onSelectLocationRef.current) {
+      onSelectLocationRef.current(null);
+    }
     if (!worldRef.current) return;
     const world = worldRef.current;
+    world.pointOfView({ lat: 20, lng: 50, altitude: 2.2 }, 1200);
     const controls = world.controls();
-
-    if (selectedLocationId) {
-      const target = LOCATIONS.find((l) => l.id === selectedLocationId);
-      if (target) {
-        // Deep cinematic zoom into city & country (altitude 1.2 gives crisp regional focus)
-        world.pointOfView(
-          { lat: target.lat, lng: target.lng, altitude: 1.2 },
-          1400
-        );
-        if (controls) {
-          controls.autoRotate = false; // pause rotation so India/hub remains steady in view
-        }
-      }
-    } else {
-      // Zoom out to global overview
-      world.pointOfView({ altitude: 2.2 }, 1200);
-      if (controls) {
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 2.5;
-      }
+    if (controls) {
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 2.5;
     }
-  }, [selectedLocationId]);
+    world.labelsData(LABELS);
+    world.pointsData(LOCATIONS);
+    world.ringsData(RINGS);
+    world.arcsData(BLUE_ARCS);
+  };
 
   const handleZoomIn = () => {
     if (!worldRef.current) return;
@@ -179,21 +246,57 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
   const handleZoomOut = () => {
     if (!worldRef.current) return;
     const currentPov = worldRef.current.pointOfView();
-    worldRef.current.pointOfView(
-      { ...currentPov, altitude: Math.min(3.5, (currentPov.altitude || 2.2) * 1.35) },
-      600
-    );
-  };
-
-  const handleResetOverview = () => {
-    if (!worldRef.current) return;
-    worldRef.current.pointOfView({ lat: 20, lng: 50, altitude: 2.2 }, 1200);
-    const controls = worldRef.current.controls();
-    if (controls) {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 2.5;
+    if ((currentPov.altitude || 2.2) < 1.6) {
+      handleResetOverview();
+    } else {
+      worldRef.current.pointOfView(
+        { ...currentPov, altitude: Math.min(3.2, (currentPov.altitude || 2.2) * 1.35) },
+        600
+      );
     }
   };
+
+  // Smooth cinematic camera zoom and dynamic branch overlay
+  useEffect(() => {
+    if (!worldRef.current) return;
+    const world = worldRef.current;
+    const controls = world.controls();
+
+    if (selectedLocationId === 'hyderabad') {
+      // Zoom into India and show all 5 branches clearly centered
+      world.pointOfView({ lat: 18.2, lng: 78.2, altitude: 0.95 }, 1200);
+      if (controls) {
+        controls.autoRotate = false;
+      }
+      world.labelsData(INDIA_BRANCH_LABELS);
+      world.pointsData(INDIA_BRANCH_POINTS);
+      world.ringsData(INDIA_BRANCH_RINGS);
+      world.arcsData([...BLUE_ARCS, ...INDIA_BRANCH_ARCS]);
+    } else if (selectedLocationId) {
+      const target = LOCATIONS.find((l) => l.id === selectedLocationId);
+      if (target) {
+        world.pointOfView({ lat: target.lat, lng: target.lng, altitude: 1.2 }, 1200);
+        if (controls) {
+          controls.autoRotate = false;
+        }
+      }
+      world.labelsData(LABELS);
+      world.pointsData(LOCATIONS);
+      world.ringsData(RINGS);
+      world.arcsData(BLUE_ARCS);
+    } else {
+      // Zoom out to global overview
+      world.pointOfView({ lat: 20, lng: 50, altitude: 2.2 }, 1200);
+      if (controls) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2.5;
+      }
+      world.labelsData(LABELS);
+      world.pointsData(LOCATIONS);
+      world.ringsData(RINGS);
+      world.arcsData(BLUE_ARCS);
+    }
+  }, [selectedLocationId]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -216,6 +319,8 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
 
         if (isDisposed || !mount) return;
 
+        const isHydSelected = selectedLocationIdRef.current === 'hyderabad';
+
         // Initialize Globe
         const world = new Globe(mount)
           .backgroundColor('rgba(0,0,0,0)')
@@ -231,68 +336,100 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .polygonStrokeColor(() => 'rgba(231,236,242,0.25)')
           .polygonAltitude((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
-            return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.025 : 0.006;
+            return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.015 : 0.005;
           })
-          // Zoom into India, Dubai or USA on country polygon click
+          // Country polygon click: click to zoom in, click active to zoom out
           .onPolygonClick((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
             const iso = feat?.properties?.ISO_A3;
-            if (iso === 'IND' && onSelectLocationRef.current) {
-              onSelectLocationRef.current('hyderabad');
-            } else if (iso === 'ARE' && onSelectLocationRef.current) {
-              onSelectLocationRef.current('dubai');
-            } else if (iso === 'USA' && onSelectLocationRef.current) {
-              onSelectLocationRef.current('usa');
+            if (iso === 'IND') {
+              if (selectedLocationIdRef.current === 'hyderabad') {
+                handleResetOverview();
+              } else {
+                onSelectLocationRef.current?.('hyderabad');
+              }
+            } else if (iso === 'ARE') {
+              if (selectedLocationIdRef.current === 'dubai') {
+                handleResetOverview();
+              } else {
+                onSelectLocationRef.current?.('dubai');
+              }
+            } else if (iso === 'USA') {
+              if (selectedLocationIdRef.current === 'usa') {
+                handleResetOverview();
+              } else {
+                onSelectLocationRef.current?.('usa');
+              }
+            } else {
+              handleResetOverview();
             }
           })
-          .arcsData(ARCS)
+          // Click anywhere on the globe ocean/background: click to zoom out
+          .onGlobeClick(() => {
+            handleResetOverview();
+          })
+          // Moving Blue Arcs
+          .arcsData(isHydSelected ? [...BLUE_ARCS, ...INDIA_BRANCH_ARCS] : BLUE_ARCS)
           .arcColor('color')
           .arcDashLength(0.4)
-          .arcDashGap(0.25)
+          .arcDashGap(0.2)
           .arcDashAnimateTime(reduceMotion ? 0 : 1500)
-          .arcStroke(0.55)
-          .arcAltitude(0.25)
-          .pointsData(LOCATIONS)
+          .arcStroke(0.65)
+          .arcAltitude((arc: unknown) => {
+            const a = arc as { isLocal?: boolean };
+            return a.isLocal ? 0.08 : 0.25;
+          })
+          // Points
+          .pointsData(isHydSelected ? INDIA_BRANCH_POINTS : LOCATIONS)
           .pointLat('lat')
           .pointLng('lng')
           .pointColor('color')
-          .pointRadius(0.45)
-          .pointAltitude(0.015)
+          .pointRadius((p: unknown) => {
+            const pt = p as { radius?: number };
+            return pt.radius || 0.45;
+          })
+          .pointAltitude(0.035)
           .onPointClick((point: unknown) => {
-            const p = point as { id: 'hyderabad' | 'dubai' | 'usa' };
-            if (p?.id && onSelectLocationRef.current) {
-              onSelectLocationRef.current(p.id);
+            const p = point as { id: string };
+            if (p?.id === selectedLocationIdRef.current) {
+              handleResetOverview();
+            } else if (p?.id === 'hyderabad' || p?.id === 'dubai' || p?.id === 'usa') {
+              onSelectLocationRef.current?.(p.id as 'hyderabad' | 'dubai' | 'usa');
             }
           })
           // Animated Ripple Radar Rings
-          .ringsData(RINGS)
+          .ringsData(isHydSelected ? INDIA_BRANCH_RINGS : RINGS)
           .ringLat('lat')
           .ringLng('lng')
           .ringMaxRadius('maxR')
           .ringPropagationSpeed('propagationSpeed')
           .ringRepeatPeriod('repeatPeriod')
+          .ringAltitude(0.032)
           .ringColor((r: unknown) => {
             const ring = r as { color: string };
             return (t: number) => {
               const alpha = Math.max(0, 1 - t) * 0.75;
               return ring.color === '#e8501e'
                 ? `rgba(232, 80, 30, ${alpha})`
-                : `rgba(255, 122, 66, ${alpha})`;
+                : `rgba(56, 189, 248, ${alpha})`;
             };
           })
-          // Visible City & Hub Labels
-          .labelsData(LABELS)
+          // Text Labels: Branches visible on zoom into India (Hyderabad, Bengaluru, Chennai, Vijayawada, Indore)
+          .labelsData(isHydSelected ? INDIA_BRANCH_LABELS : LABELS)
           .labelLat('lat')
           .labelLng('lng')
           .labelText('text')
           .labelSize('size')
-          .labelDotRadius(0.3)
+          .labelDotRadius(0.38)
           .labelColor('color')
-          .labelAltitude(0.02)
+          .labelAltitude(0.05)
+          .labelResolution(3)
           .onLabelClick((l: unknown) => {
-            const label = l as { id: 'hyderabad' | 'dubai' | 'usa' };
-            if (label?.id && onSelectLocationRef.current) {
-              onSelectLocationRef.current(label.id);
+            const label = l as { id: string };
+            if (label?.id === selectedLocationIdRef.current) {
+              handleResetOverview();
+            } else if (label?.id === 'hyderabad' || label?.id === 'dubai' || label?.id === 'usa') {
+              onSelectLocationRef.current?.(label.id as 'hyderabad' | 'dubai' | 'usa');
             }
           });
 
@@ -304,15 +441,14 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         const controls = world.controls();
         controls.autoRotate = !reduceMotion;
         controls.autoRotateSpeed = 2.5;
-        controls.enableZoom = true; // allow interactive user zooming as well
+        controls.enableZoom = true;
 
         worldRef.current = world;
 
-        // If a location is already selected on mount, animate to it
-        if (selectedLocationId) {
-          const target = LOCATIONS.find((loc) => loc.id === selectedLocationId);
+        if (selectedLocationIdRef.current) {
+          const target = LOCATIONS.find((loc) => loc.id === selectedLocationIdRef.current);
           if (target) {
-            world.pointOfView({ lat: target.lat, lng: target.lng, altitude: 1.2 }, 800);
+            world.pointOfView({ lat: target.lat, lng: target.lng, altitude: selectedLocationIdRef.current === 'hyderabad' ? 0.95 : 1.2 }, 800);
             controls.autoRotate = false;
           }
         }
@@ -364,9 +500,24 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       {/* 3D Canvas Mount */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
+      {/* Prominent Quick "Click to Zoom Out" badge when zoomed in */}
+      {selectedLocationId && (
+        <button
+          id="globe-zoom-out-btn"
+          onClick={handleResetOverview}
+          title="Click to Zoom Out to World Overview"
+          aria-label="Click to Zoom Out"
+          className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-sky-50 backdrop-blur-md border border-sky-300 text-xs font-bold text-sky-700 shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 animate-fadeIn"
+        >
+          <RotateCcw className="w-3.5 h-3.5 text-sky-600" />
+          <span>Click to Zoom Out</span>
+        </button>
+      )}
+
       {/* Floating Interactive Camera Controls */}
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/90 shadow-md">
         <button
+          id="globe-ctrl-zoomin"
           onClick={handleZoomIn}
           title="Zoom In"
           aria-label="Zoom In"
@@ -375,6 +526,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
         <button
+          id="globe-ctrl-zoomout"
           onClick={handleZoomOut}
           title="Zoom Out"
           aria-label="Zoom Out"
@@ -383,6 +535,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           <ZoomOut className="w-3.5 h-3.5" />
         </button>
         <button
+          id="globe-ctrl-reset"
           onClick={handleResetOverview}
           title="Reset to Global Overview"
           aria-label="Reset to Global Overview"
@@ -393,9 +546,9 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       </div>
 
       {/* Hint Badge */}
-      <div className="absolute top-4 left-4 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-slate-200/80 text-[10px] font-mono text-slate-600 font-bold shadow-xs pointer-events-none">
-        <Compass className="w-3 h-3 text-sky-600 animate-spin" />
-        <span>Click India, Dubai, or USA to zoom in</span>
+      <div className="absolute top-4 left-4 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/85 backdrop-blur-md border border-slate-200/80 text-[10px] font-mono text-slate-600 font-bold shadow-xs pointer-events-none">
+        <Compass className="w-3 h-3 text-sky-600" />
+        <span>{selectedLocationId ? 'Click globe or button to zoom out' : 'Click India, Dubai, or USA to zoom in'}</span>
       </div>
     </div>
   );
