@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Globe, { type GlobeInstance } from 'globe.gl';
+import { ZoomIn, ZoomOut, RotateCcw, Compass } from 'lucide-react';
 
 export interface OfficeLocation {
   id: 'hyderabad' | 'dubai' | 'usa';
@@ -72,10 +73,25 @@ const HIGHLIGHT: Record<string, string> = {
 };
 
 const LOCATIONS = [
-  { id: 'usa', name: 'USA — Temecula', lat: 33.4936, lng: -117.1484, color: HIGHLIGHT.USA },
+  { id: 'usa', name: 'USA — California', lat: 33.4936, lng: -117.1484, color: HIGHLIGHT.USA },
   { id: 'dubai', name: 'UAE — Dubai', lat: 25.2137, lng: 55.2814, color: HIGHLIGHT.ARE },
   { id: 'hyderabad', name: 'India — Hyderabad', lat: 17.45, lng: 78.38, color: HIGHLIGHT.IND },
 ];
+
+const LABELS = [
+  { id: 'hyderabad', text: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, size: 1.1, color: '#ffffff' },
+  { id: 'dubai', text: 'Dubai (Hub)', lat: 25.2137, lng: 55.2814, size: 1.0, color: '#ffffff' },
+  { id: 'usa', text: 'California (Hub)', lat: 33.4936, lng: -117.1484, size: 1.0, color: '#ffffff' },
+];
+
+const RINGS = LOCATIONS.map((loc) => ({
+  lat: loc.lat,
+  lng: loc.lng,
+  maxR: loc.id === 'hyderabad' ? 5.5 : 4.5,
+  propagationSpeed: 2.5,
+  repeatPeriod: 1100,
+  color: loc.id === 'hyderabad' ? '#e8501e' : loc.color,
+}));
 
 const ARCS = [
   {
@@ -118,17 +134,59 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
   const worldRef = useRef<GlobeInstance | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Focus location camera smoothly when selectedLocationId changes
+  // Smooth cinematic camera zoom into location (India / Hyderabad, Dubai, USA)
   useEffect(() => {
-    if (!worldRef.current || !selectedLocationId) return;
-    const target = LOCATIONS.find((l) => l.id === selectedLocationId);
-    if (target) {
-      worldRef.current.pointOfView(
-        { lat: target.lat, lng: target.lng, altitude: 2.1 },
-        1200
-      );
+    if (!worldRef.current) return;
+    const world = worldRef.current;
+    const controls = world.controls();
+
+    if (selectedLocationId) {
+      const target = LOCATIONS.find((l) => l.id === selectedLocationId);
+      if (target) {
+        // Deep cinematic zoom into city & country (altitude 0.95 gives close regional detail)
+        world.pointOfView(
+          { lat: target.lat, lng: target.lng, altitude: 0.95 },
+          1500
+        );
+        if (controls) {
+          controls.autoRotateSpeed = 0.6; // gentle rotation while focused
+        }
+      }
+    } else {
+      // Zoom out to global overview
+      world.pointOfView({ altitude: 2.2 }, 1300);
+      if (controls) {
+        controls.autoRotateSpeed = 2.5;
+      }
     }
   }, [selectedLocationId]);
+
+  const handleZoomIn = () => {
+    if (!worldRef.current) return;
+    const currentPov = worldRef.current.pointOfView();
+    worldRef.current.pointOfView(
+      { ...currentPov, altitude: Math.max(0.65, (currentPov.altitude || 2.2) * 0.75) },
+      600
+    );
+  };
+
+  const handleZoomOut = () => {
+    if (!worldRef.current) return;
+    const currentPov = worldRef.current.pointOfView();
+    worldRef.current.pointOfView(
+      { ...currentPov, altitude: Math.min(3.5, (currentPov.altitude || 2.2) * 1.35) },
+      600
+    );
+  };
+
+  const handleResetOverview = () => {
+    if (!worldRef.current) return;
+    worldRef.current.pointOfView({ lat: 20, lng: 50, altitude: 2.2 }, 1200);
+    const controls = worldRef.current.controls();
+    if (controls) {
+      controls.autoRotateSpeed = 2.5;
+    }
+  };
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -166,7 +224,19 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .polygonStrokeColor(() => 'rgba(231,236,242,0.25)')
           .polygonAltitude((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
-            return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.02 : 0.006;
+            return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.025 : 0.006;
+          })
+          // Zoom into India, Dubai or USA on country polygon click
+          .onPolygonClick((f: unknown) => {
+            const feat = f as { properties: { ISO_A3: string } };
+            const iso = feat?.properties?.ISO_A3;
+            if (iso === 'IND' && onSelectLocation) {
+              onSelectLocation('hyderabad');
+            } else if (iso === 'ARE' && onSelectLocation) {
+              onSelectLocation('dubai');
+            } else if (iso === 'USA' && onSelectLocation) {
+              onSelectLocation('usa');
+            }
           })
           .arcsData(ARCS)
           .arcColor('color')
@@ -179,12 +249,43 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .pointLat('lat')
           .pointLng('lng')
           .pointColor('color')
-          .pointRadius(0.4)
-          .pointAltitude(0.012)
+          .pointRadius(0.45)
+          .pointAltitude(0.015)
           .onPointClick((point: unknown) => {
             const p = point as { id: 'hyderabad' | 'dubai' | 'usa' };
             if (p?.id && onSelectLocation) {
               onSelectLocation(p.id);
+            }
+          })
+          // Animated Ripple Radar Rings
+          .ringsData(RINGS)
+          .ringLat('lat')
+          .ringLng('lng')
+          .ringMaxRadius('maxR')
+          .ringPropagationSpeed('propagationSpeed')
+          .ringRepeatPeriod('repeatPeriod')
+          .ringColor((r: unknown) => {
+            const ring = r as { color: string };
+            return (t: number) => {
+              const alpha = Math.max(0, 1 - t) * 0.75;
+              return ring.color === '#e8501e'
+                ? `rgba(232, 80, 30, ${alpha})`
+                : `rgba(255, 122, 66, ${alpha})`;
+            };
+          })
+          // Visible City & Hub Labels
+          .labelsData(LABELS)
+          .labelLat('lat')
+          .labelLng('lng')
+          .labelText('text')
+          .labelSize('size')
+          .labelDotRadius(0.3)
+          .labelColor('color')
+          .labelAltitude(0.02)
+          .onLabelClick((l: unknown) => {
+            const label = l as { id: 'hyderabad' | 'dubai' | 'usa' };
+            if (label?.id && onSelectLocation) {
+              onSelectLocation(label.id);
             }
           });
 
@@ -196,7 +297,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         const controls = world.controls();
         controls.autoRotate = !reduceMotion;
         controls.autoRotateSpeed = 2.5;
-        controls.enableZoom = false;
+        controls.enableZoom = true; // allow interactive user zooming as well
 
         worldRef.current = world;
 
@@ -241,7 +342,43 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           <span>Loading globe…</span>
         </div>
       )}
+      
+      {/* 3D Canvas Mount */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+
+      {/* Floating Interactive Camera Controls */}
+      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/90 shadow-md">
+        <button
+          onClick={handleZoomIn}
+          title="Zoom In"
+          aria-label="Zoom In"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
+        >
+          <ZoomIn className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={handleZoomOut}
+          title="Zoom Out"
+          aria-label="Zoom Out"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
+        >
+          <ZoomOut className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={handleResetOverview}
+          title="Reset to Global Overview"
+          aria-label="Reset to Global Overview"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Hint Badge */}
+      <div className="absolute top-4 left-4 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-slate-200/80 text-[10px] font-mono text-slate-600 font-bold shadow-xs pointer-events-none">
+        <Compass className="w-3 h-3 text-sky-600 animate-spin" />
+        <span>Click India, Dubai, or USA to zoom in</span>
+      </div>
     </div>
   );
 };
