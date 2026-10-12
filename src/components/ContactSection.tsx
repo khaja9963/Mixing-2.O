@@ -6,13 +6,10 @@ import {
   MapPin,
   Send,
   CheckCircle2,
-  Globe2,
   Building2,
   Compass,
   ExternalLink,
-  ShieldCheck,
-  Clock,
-  Briefcase
+  ShieldCheck
 } from 'lucide-react';
 import { ClyptusInteractiveGlobe, CLYPTUS_OFFICES } from './ClyptusInteractiveGlobe';
 
@@ -329,25 +326,6 @@ export const ContactSection: React.FC = () => {
                 hoveredLocationId={hoveredOfficeId}
                 onHoverLocation={(id) => setHoveredOfficeId(id)}
               />
-            </div>
-
-            {/* Quick Guarantees Ribbon */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-              <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center">
-                <Clock className="w-4 h-4 text-sky-600 mb-1" />
-                <span className="text-[11px] font-extrabold text-slate-800">&lt; 24h Response</span>
-                <span className="text-[9px] text-slate-400">Guaranteed SLA</span>
-              </div>
-              <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center">
-                <Globe2 className="w-4 h-4 text-indigo-600 mb-1" />
-                <span className="text-[11px] font-extrabold text-slate-800">3 Global Hubs</span>
-                <span className="text-[9px] text-slate-400">India & Middle East</span>
-              </div>
-              <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center">
-                <Briefcase className="w-4 h-4 text-emerald-600 mb-1" />
-                <span className="text-[11px] font-extrabold text-slate-800">Direct NDA</span>
-                <span className="text-[9px] text-slate-400">Confidentiality</span>
-              </div>
             </div>
           </div>
 
