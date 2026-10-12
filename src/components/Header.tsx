@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { 
   Sliders, 
   Menu, 
@@ -34,7 +34,10 @@ export const Header: React.FC<HeaderProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
 
+  // Scroll state detection
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 15);
@@ -43,6 +46,36 @@ export const Header: React.FC<HeaderProps> = ({
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu on Escape key, click outside, and lock body scroll
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    // Prevent background scrolling while mobile overlay is open
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const navLinks = [
     { name: 'Home', icon: Home },
@@ -62,8 +95,12 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header 
-      className={`sticky top-0 z-50 w-full select-none transition-all duration-300 ${
+    <motion.header 
+      ref={headerRef}
+      initial={reduceMotion ? false : { y: -16, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className={`sticky top-0 z-50 w-full select-none transition-colors duration-300 ${
         isScrolled
           ? 'bg-white/80 backdrop-blur-2xl backdrop-saturate-180 border-b border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
           : 'bg-white/65 backdrop-blur-xl backdrop-saturate-150 border-b border-slate-200/50 shadow-xs'
@@ -82,8 +119,9 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand Logo with Smooth Spring Hover */}
         <div className="flex items-center gap-3">
           <motion.button 
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             onClick={() => {
               setIsMobileMenuOpen(false);
               onNavigate('Home');
@@ -112,17 +150,24 @@ export const Header: React.FC<HeaderProps> = ({
             const isHovered = hoveredLink === link;
 
             return (
-              <button
+              <motion.button
                 key={link}
                 onClick={() => onNavigate(link)}
                 onMouseEnter={() => setHoveredLink(link)}
+                whileHover={reduceMotion ? undefined : { y: -0.5 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 className="relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer focus:outline-none"
               >
                 {/* Apple-style sliding active pill */}
                 {isActive && (
                   <motion.div
                     layoutId="appleNavActivePill"
-                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    transition={
+                      reduceMotion 
+                        ? { duration: 0 } 
+                        : { type: 'spring', stiffness: 420, damping: 32 }
+                    }
                     className="absolute inset-0 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-slate-200/90 z-0"
                   />
                 )}
@@ -131,13 +176,17 @@ export const Header: React.FC<HeaderProps> = ({
                 {isHovered && !isActive && (
                   <motion.div
                     layoutId="appleNavHoverPill"
-                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                    transition={
+                      reduceMotion 
+                        ? { duration: 0 } 
+                        : { type: 'spring', stiffness: 480, damping: 35 }
+                    }
                     className="absolute inset-0 rounded-full bg-white/60 z-0"
                   />
                 )}
 
                 <span
-                  className={`relative z-10 transition-colors ${
+                  className={`relative z-10 transition-colors duration-150 ${
                     isActive
                       ? 'text-slate-900 font-bold'
                       : 'text-slate-600 hover:text-slate-950 font-medium'
@@ -145,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   {link}
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </nav>
@@ -155,26 +204,38 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Apple-style Iridescent Services Button */}
           {onOpen3dServices && (
             <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
+              whileHover={reduceMotion ? undefined : { scale: 1.03, y: -1 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.97, y: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               onClick={onOpen3dServices}
               className="relative group hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white text-xs font-bold shadow-[0_2px_12px_rgba(15,23,42,0.2)] hover:shadow-[0_4px_20px_rgba(56,189,248,0.35)] transition-all overflow-hidden border border-slate-700/60 cursor-pointer"
             >
               {/* Aurora Glow Overlay on Hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-sky-500/25 via-indigo-500/25 to-purple-500/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:text-sky-300 animate-pulse relative z-10" />
+              
+              {/* Animated Sparkle Icon */}
+              <motion.div
+                animate={reduceMotion ? undefined : { rotate: [0, 8, -8, 0], scale: [1, 1.08, 0.96, 1] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                whileHover={reduceMotion ? undefined : { rotate: 180, scale: 1.25 }}
+                className="relative z-10 flex items-center justify-center"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:text-sky-300" />
+              </motion.div>
+              
               <span className="relative z-10 bg-gradient-to-r from-white via-slate-100 to-sky-200 bg-clip-text text-transparent">
                 Services
               </span>
             </motion.button>
           )}
 
-          {/* Quick Studio 3D Customizer Toggle Button */}
+          {/* Quick Studio 3D Customizer / Filter Toggle Button */}
           <motion.button
-            whileHover={{ scale: 1.06, rotate: 15 }}
-            whileTap={{ scale: 0.94 }}
+            whileHover={reduceMotion ? undefined : { scale: 1.08, rotate: 90 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.92, rotate: 180 }}
+            transition={{ type: 'spring', stiffness: 350, damping: 22 }}
             onClick={onToggleCustomizer}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/80 hover:bg-white border border-slate-200/90 text-slate-700 hover:text-sky-600 transition-all shadow-xs flex items-center justify-center cursor-pointer backdrop-blur-md"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/80 hover:bg-white border border-slate-200/90 text-slate-700 hover:text-sky-600 transition-colors shadow-xs flex items-center justify-center cursor-pointer backdrop-blur-md"
             title="Toggle Studio Controls"
             aria-label="Toggle Studio Controls"
           >
@@ -183,7 +244,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Mobile Glassy Hamburger Menu Button */}
           <motion.button
-            whileTap={{ scale: 0.92 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.92 }}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="lg:hidden p-2 rounded-2xl bg-white/80 hover:bg-white border border-slate-200/80 text-slate-800 shadow-xs backdrop-blur-md transition-colors focus:outline-none"
             aria-label="Toggle Navigation Menu"
@@ -235,11 +296,11 @@ export const Header: React.FC<HeaderProps> = ({
                   setIsMobileMenuOpen(false);
                   onOpen3dServices();
                 }}
-                className="w-full mb-4 p-3 rounded-2xl bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 border border-sky-200/80 flex items-center justify-between text-left group"
+                className="w-full mb-4 p-3 rounded-2xl bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 border border-sky-200/80 flex items-center justify-between text-left group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center shadow-sm">
-                    <Sparkles className="w-4 h-4 animate-spin-slow" />
+                    <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="text-xs font-extrabold text-slate-950 uppercase tracking-tight">Explore 3D Services Universe</div>
@@ -264,7 +325,7 @@ export const Header: React.FC<HeaderProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.04 * idx }}
                     onClick={() => handleMobileNav(link)}
-                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all text-left ${
+                    className={`flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer ${
                       isActive
                         ? 'bg-sky-600 text-white shadow-md shadow-sky-500/25 border border-sky-500'
                         : 'bg-slate-50/80 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/60'
@@ -284,7 +345,7 @@ export const Header: React.FC<HeaderProps> = ({
                   setIsMobileMenuOpen(false);
                   onToggleCustomizer();
                 }}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-slate-100/90 text-slate-700 hover:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200"
+                className="flex-1 py-2.5 px-3 rounded-xl bg-slate-100/90 text-slate-700 hover:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 cursor-pointer"
               >
                 <Sliders className="w-3.5 h-3.5 text-sky-600" />
                 <span>Studio 3D Controls</span>
@@ -292,7 +353,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => handleMobileNav('Contact')}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-slate-950 text-white hover:bg-sky-600 font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
+                className="flex-1 py-2.5 px-3 rounded-xl bg-slate-950 text-white hover:bg-sky-600 font-bold text-xs flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Contact Us</span>
@@ -301,6 +362,6 @@ export const Header: React.FC<HeaderProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 };
