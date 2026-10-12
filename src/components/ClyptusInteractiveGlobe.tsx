@@ -61,7 +61,7 @@ export const CLYPTUS_OFFICES: OfficeLocation[] = [
     address: '45627 Basswood Ct, Temecula, California 92592',
     emails: ['hr.usa@clyptus.com'],
     phones: ['+1 (480) 427-6373'],
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=45627+Basswood+Ct+Temecula+California 92592',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=45627+Basswood+Ct+Temecula+California+92592',
     description: 'North America Business Hub & Strategic Enterprise Accounts',
   },
 ];
@@ -73,22 +73,22 @@ const HIGHLIGHT: Record<string, string> = {
 };
 
 const LOCATIONS = [
-  { id: 'usa', name: 'USA — California', lat: 33.4936, lng: -117.1484, color: HIGHLIGHT.USA, radius: 0.48 },
-  { id: 'dubai', name: 'UAE — Dubai', lat: 25.2137, lng: 55.2814, color: HIGHLIGHT.ARE, radius: 0.48 },
-  { id: 'hyderabad', name: 'India — Hyderabad', lat: 17.45, lng: 78.38, color: HIGHLIGHT.IND, radius: 0.52 },
+  { id: 'usa', name: 'California', lat: 33.4936, lng: -117.1484, color: HIGHLIGHT.USA, radius: 0.38 },
+  { id: 'dubai', name: 'Dubai', lat: 25.2137, lng: 55.2814, color: HIGHLIGHT.ARE, radius: 0.38 },
+  { id: 'hyderabad', name: 'Hyderabad', lat: 17.45, lng: 78.38, color: HIGHLIGHT.IND, radius: 0.42 },
 ];
 
 const LABELS = [
-  { id: 'hyderabad', text: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, size: 1.15, color: '#ffffff' },
-  { id: 'dubai', text: 'Dubai (Hub)', lat: 25.2137, lng: 55.2814, size: 1.05, color: '#ffffff' },
-  { id: 'usa', text: 'California (Hub)', lat: 33.4936, lng: -117.1484, size: 1.05, color: '#ffffff' },
+  { id: 'hyderabad', text: 'Hyderabad', lat: 17.45, lng: 78.38, size: 0.52, color: '#ffffff', orientation: 'top' },
+  { id: 'dubai', text: 'Dubai', lat: 25.2137, lng: 55.2814, size: 0.48, color: '#ffffff', orientation: 'top' },
+  { id: 'usa', text: 'California', lat: 33.4936, lng: -117.1484, size: 0.48, color: '#ffffff', orientation: 'top' },
 ];
 
 const RINGS = LOCATIONS.map((loc) => ({
   id: loc.id,
   lat: loc.lat,
   lng: loc.lng,
-  maxR: loc.id === 'hyderabad' ? 5.5 : 4.5,
+  maxR: loc.id === 'hyderabad' ? 4.5 : 3.8,
   propagationSpeed: 2.5,
   repeatPeriod: 1100,
   color: loc.id === 'hyderabad' ? '#e8501e' : loc.color,
@@ -127,27 +127,28 @@ const BLUE_ARCS = [
 
 // 5 Branches in India: Hyderabad, Bengaluru, Chennai, Vijayawada, Indore
 export const INDIA_BRANCH_POINTS = [
-  { id: 'hyderabad', name: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, color: '#ffffff', radius: 0.58 },
-  { id: 'bengaluru', name: 'Bengaluru', lat: 12.9716, lng: 77.5946, color: '#38bdf8', radius: 0.44 },
-  { id: 'chennai', name: 'Chennai', lat: 13.0827, lng: 80.2707, color: '#38bdf8', radius: 0.44 },
-  { id: 'vijayawada', name: 'Vijayawada', lat: 16.5062, lng: 80.6480, color: '#38bdf8', radius: 0.44 },
-  { id: 'indore', name: 'Indore', lat: 22.7196, lng: 75.8577, color: '#38bdf8', radius: 0.44 },
+  { id: 'hyderabad', name: 'Hyderabad', lat: 17.45, lng: 78.38, color: '#ffffff', radius: 0.38 },
+  { id: 'bengaluru', name: 'Bengaluru', lat: 12.9716, lng: 77.5946, color: '#38bdf8', radius: 0.3 },
+  { id: 'chennai', name: 'Chennai', lat: 13.0827, lng: 80.2707, color: '#38bdf8', radius: 0.3 },
+  { id: 'vijayawada', name: 'Vijayawada', lat: 16.5062, lng: 80.6480, color: '#38bdf8', radius: 0.3 },
+  { id: 'indore', name: 'Indore', lat: 22.7196, lng: 75.8577, color: '#38bdf8', radius: 0.3 },
 ];
 
+// Perfectly adjusted sizes, clean labels, and directional offsets to eliminate overlap
 export const INDIA_BRANCH_LABELS = [
-  { id: 'hyderabad', text: 'Hyderabad (HQ)', lat: 17.45, lng: 78.38, size: 1.25, color: '#ffffff' },
-  { id: 'bengaluru', text: 'Bengaluru', lat: 12.9716, lng: 77.5946, size: 1.05, color: '#e0f2fe' },
-  { id: 'chennai', text: 'Chennai', lat: 13.0827, lng: 80.2707, size: 1.05, color: '#e0f2fe' },
-  { id: 'vijayawada', text: 'Vijayawada', lat: 16.5062, lng: 80.6480, size: 1.05, color: '#e0f2fe' },
-  { id: 'indore', text: 'Indore', lat: 22.7196, lng: 75.8577, size: 1.05, color: '#e0f2fe' },
+  { id: 'hyderabad', text: 'Hyderabad', lat: 17.45, lng: 78.38, size: 0.52, color: '#ffffff', orientation: 'top' },
+  { id: 'indore', text: 'Indore', lat: 22.7196, lng: 75.8577, size: 0.44, color: '#e0f2fe', orientation: 'top' },
+  { id: 'vijayawada', text: 'Vijayawada', lat: 16.5062, lng: 80.6480, size: 0.44, color: '#e0f2fe', orientation: 'right' },
+  { id: 'chennai', text: 'Chennai', lat: 13.0827, lng: 80.2707, size: 0.44, color: '#e0f2fe', orientation: 'right' },
+  { id: 'bengaluru', text: 'Bengaluru', lat: 12.9716, lng: 77.5946, size: 0.44, color: '#e0f2fe', orientation: 'bottom' },
 ];
 
 export const INDIA_BRANCH_RINGS = [
-  { id: 'hyderabad', lat: 17.45, lng: 78.38, maxR: 3.5, propagationSpeed: 2.2, repeatPeriod: 1200, color: '#e8501e' },
-  { id: 'bengaluru', lat: 12.9716, lng: 77.5946, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
-  { id: 'chennai', lat: 13.0827, lng: 80.2707, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
-  { id: 'vijayawada', lat: 16.5062, lng: 80.6480, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
-  { id: 'indore', lat: 22.7196, lng: 75.8577, maxR: 2.2, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'hyderabad', lat: 17.45, lng: 78.38, maxR: 2.8, propagationSpeed: 2.2, repeatPeriod: 1200, color: '#e8501e' },
+  { id: 'bengaluru', lat: 12.9716, lng: 77.5946, maxR: 1.8, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'chennai', lat: 13.0827, lng: 80.2707, maxR: 1.8, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'vijayawada', lat: 16.5062, lng: 80.6480, maxR: 1.8, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
+  { id: 'indore', lat: 22.7196, lng: 75.8577, maxR: 1.8, propagationSpeed: 1.8, repeatPeriod: 1400, color: '#38bdf8' },
 ];
 
 export const INDIA_BRANCH_ARCS = [
@@ -263,8 +264,8 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     const controls = world.controls();
 
     if (selectedLocationId === 'hyderabad') {
-      // Zoom into India and show all 5 branches clearly centered
-      world.pointOfView({ lat: 18.2, lng: 78.2, altitude: 0.95 }, 1200);
+      // Zoom into India with optimal framing for all 5 branches
+      world.pointOfView({ lat: 17.8, lng: 78.8, altitude: 0.88 }, 1200);
       if (controls) {
         controls.autoRotate = false;
       }
@@ -336,7 +337,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .polygonStrokeColor(() => 'rgba(231,236,242,0.25)')
           .polygonAltitude((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
-            return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.015 : 0.005;
+            return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.012 : 0.005;
           })
           // Country polygon click: click to zoom in, click active to zoom out
           .onPolygonClick((f: unknown) => {
@@ -386,9 +387,9 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .pointColor('color')
           .pointRadius((p: unknown) => {
             const pt = p as { radius?: number };
-            return pt.radius || 0.45;
+            return pt.radius || 0.35;
           })
-          .pointAltitude(0.035)
+          .pointAltitude(0.025)
           .onPointClick((point: unknown) => {
             const p = point as { id: string };
             if (p?.id === selectedLocationIdRef.current) {
@@ -404,7 +405,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           .ringMaxRadius('maxR')
           .ringPropagationSpeed('propagationSpeed')
           .ringRepeatPeriod('repeatPeriod')
-          .ringAltitude(0.032)
+          .ringAltitude(0.028)
           .ringColor((r: unknown) => {
             const ring = r as { color: string };
             return (t: number) => {
@@ -414,16 +415,23 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
                 : `rgba(56, 189, 248, ${alpha})`;
             };
           })
-          // Text Labels: Branches visible on zoom into India (Hyderabad, Bengaluru, Chennai, Vijayawada, Indore)
+          // Clean, readable, well-spaced branch labels
           .labelsData(isHydSelected ? INDIA_BRANCH_LABELS : LABELS)
           .labelLat('lat')
           .labelLng('lng')
           .labelText('text')
-          .labelSize('size')
-          .labelDotRadius(0.38)
+          .labelSize((d: unknown) => {
+            const l = d as { size?: number };
+            return l.size || 0.45;
+          })
+          .labelDotRadius(0.12)
+          .labelDotOrientation((d: object) => {
+            const l = d as { orientation?: 'right' | 'top' | 'bottom' };
+            return (l.orientation || 'bottom') as 'right' | 'top' | 'bottom';
+          })
           .labelColor('color')
-          .labelAltitude(0.05)
-          .labelResolution(3)
+          .labelAltitude(0.04)
+          .labelResolution(4)
           .onLabelClick((l: unknown) => {
             const label = l as { id: string };
             if (label?.id === selectedLocationIdRef.current) {
@@ -448,7 +456,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         if (selectedLocationIdRef.current) {
           const target = LOCATIONS.find((loc) => loc.id === selectedLocationIdRef.current);
           if (target) {
-            world.pointOfView({ lat: target.lat, lng: target.lng, altitude: selectedLocationIdRef.current === 'hyderabad' ? 0.95 : 1.2 }, 800);
+            world.pointOfView({ lat: target.lat, lng: target.lng, altitude: selectedLocationIdRef.current === 'hyderabad' ? 0.88 : 1.2 }, 800);
             controls.autoRotate = false;
           }
         }
