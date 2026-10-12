@@ -14,7 +14,7 @@ import {
 import { ClyptusInteractiveGlobe, CLYPTUS_OFFICES } from './ClyptusInteractiveGlobe';
 
 export const ContactSection: React.FC = () => {
-  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'dubai' | 'usa' | null>('hyderabad');
+  const [selectedOfficeId, setSelectedOfficeId] = useState<'hyderabad' | 'dubai' | 'usa' | null>(null);
   const [hoveredOfficeId, setHoveredOfficeId] = useState<string | null>(null);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -101,9 +101,9 @@ export const ContactSection: React.FC = () => {
                       ? 'bg-slate-900 text-white shadow-sm ring-2 ring-slate-400'
                       : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
                   }`}
-                  title="Click to Zoom Out"
+                  title="Global Overview"
                 >
-                  <span>Overview (Zoom Out)</span>
+                  <span>Overview</span>
                 </button>
                 {CLYPTUS_OFFICES.map((office) => {
                   const isSelected = selectedOfficeId === office.id;

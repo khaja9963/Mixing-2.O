@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Globe, { type GlobeInstance } from 'globe.gl';
-import { RotateCcw, Compass } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
 export interface OfficeLocation {
   id: 'hyderabad' | 'dubai' | 'usa';
@@ -428,7 +428,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         const controls = world.controls();
         controls.autoRotate = !reduceMotion;
         controls.autoRotateSpeed = 2.5;
-        controls.enableZoom = true;
+        controls.enableZoom = false;
 
         worldRef.current = world;
 
@@ -438,6 +438,10 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
             world.pointOfView({ lat: target.lat, lng: target.lng, altitude: selectedLocationIdRef.current === 'hyderabad' ? 0.88 : 1.2 }, 800);
             controls.autoRotate = false;
           }
+        } else {
+          world.pointOfView({ lat: 20, lng: 50, altitude: 2.2 });
+          controls.autoRotate = !reduceMotion;
+          controls.autoRotateSpeed = 2.5;
         }
 
         const handleResize = () => {
@@ -487,19 +491,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       {/* 3D Canvas Mount */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Prominent Quick "Click to Zoom Out" badge when zoomed in */}
-      {selectedLocationId && (
-        <button
-          id="globe-zoom-out-btn"
-          onClick={handleResetOverview}
-          title="Click to Zoom Out to World Overview"
-          aria-label="Click to Zoom Out"
-          className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-sky-50 backdrop-blur-md border border-sky-300 text-xs font-bold text-sky-700 shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 animate-fadeIn"
-        >
-          <RotateCcw className="w-3.5 h-3.5 text-sky-600" />
-          <span>Click to Zoom Out</span>
-        </button>
-      )}
+
 
       {/* Floating Interactive Camera Reset Control */}
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/90 shadow-md">
@@ -514,11 +506,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         </button>
       </div>
 
-      {/* Hint Badge */}
-      <div className="absolute top-4 left-4 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/85 backdrop-blur-md border border-slate-200/80 text-[10px] font-mono text-slate-600 font-bold shadow-xs pointer-events-none">
-        <Compass className="w-3 h-3 text-sky-600" />
-        <span>{selectedLocationId ? 'Click globe or button to zoom out' : 'Click India, Dubai, or USA to zoom in'}</span>
-      </div>
+
     </div>
   );
 };
