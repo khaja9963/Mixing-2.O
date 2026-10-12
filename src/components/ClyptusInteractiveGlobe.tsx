@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Globe, { type GlobeInstance } from 'globe.gl';
-import { ZoomIn, ZoomOut, RotateCcw, Compass } from 'lucide-react';
+import { RotateCcw, Compass } from 'lucide-react';
 
 export interface OfficeLocation {
   id: 'hyderabad' | 'dubai' | 'usa';
@@ -228,33 +228,12 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     if (controls) {
       controls.autoRotate = true;
       controls.autoRotateSpeed = 2.5;
+      controls.enableZoom = false;
     }
     world.labelsData(LABELS);
     world.pointsData(LOCATIONS);
     world.ringsData(RINGS);
     world.arcsData(BLUE_ARCS);
-  };
-
-  const handleZoomIn = () => {
-    if (!worldRef.current) return;
-    const currentPov = worldRef.current.pointOfView();
-    worldRef.current.pointOfView(
-      { ...currentPov, altitude: Math.max(0.6, (currentPov.altitude || 2.2) * 0.75) },
-      600
-    );
-  };
-
-  const handleZoomOut = () => {
-    if (!worldRef.current) return;
-    const currentPov = worldRef.current.pointOfView();
-    if ((currentPov.altitude || 2.2) < 1.6) {
-      handleResetOverview();
-    } else {
-      worldRef.current.pointOfView(
-        { ...currentPov, altitude: Math.min(3.2, (currentPov.altitude || 2.2) * 1.35) },
-        600
-      );
-    }
   };
 
   // Smooth cinematic camera zoom and dynamic branch overlay
@@ -522,26 +501,8 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         </button>
       )}
 
-      {/* Floating Interactive Camera Controls */}
+      {/* Floating Interactive Camera Reset Control */}
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/90 shadow-md">
-        <button
-          id="globe-ctrl-zoomin"
-          onClick={handleZoomIn}
-          title="Zoom In"
-          aria-label="Zoom In"
-          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
-        >
-          <ZoomIn className="w-3.5 h-3.5" />
-        </button>
-        <button
-          id="globe-ctrl-zoomout"
-          onClick={handleZoomOut}
-          title="Zoom Out"
-          aria-label="Zoom Out"
-          className="p-2 rounded-xl bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-600 transition-colors cursor-pointer"
-        >
-          <ZoomOut className="w-3.5 h-3.5" />
-        </button>
         <button
           id="globe-ctrl-reset"
           onClick={handleResetOverview}

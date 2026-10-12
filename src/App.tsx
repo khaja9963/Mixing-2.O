@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { SLIDER_CARDS, DEFAULT_SPIRAL_CONFIG } from './data/sliderData';
 import type { SliderCard, SpiralConfig } from './data/sliderData';
 import { Header } from './components/Header';
@@ -37,6 +37,25 @@ export function App() {
   const [selectedCard, setSelectedCard] = useState<SliderCard | null>(null);
   const [codeModalCard, setCodeModalCard] = useState<SliderCard | null>(null);
   const [activeResourceModal, setActiveResourceModal] = useState<'privacy' | 'terms' | 'cookies' | 'faqs' | 'insights' | null>(null);
+
+  // Sync hash routing (e.g. #contact) with currentPage
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'contact') setCurrentPage('Contact');
+      else if (hash === 'projects') setCurrentPage('Projects');
+      else if (hash === 'about') setCurrentPage('About');
+      else if (hash === 'careers') setCurrentPage('Careers');
+      else if (hash === 'industries') setCurrentPage('Industries');
+      else if (hash === 'blogs') setCurrentPage('Blogs');
+      else if (hash === 'hr-policies' || hash === 'hrpolicies') setCurrentPage('HR Policies');
+      else if (hash === 'sap') setCurrentPage('SAP');
+      else if (hash === 'ai') setCurrentPage('AI');
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   // HR Policies Authentication State
   const [isHrAuthenticated, setIsHrAuthenticated] = useState<boolean>(false);
