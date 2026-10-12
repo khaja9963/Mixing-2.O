@@ -143,19 +143,20 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     if (selectedLocationId) {
       const target = LOCATIONS.find((l) => l.id === selectedLocationId);
       if (target) {
-        // Deep cinematic zoom into city & country (altitude 0.95 gives close regional detail)
+        // Deep cinematic zoom into city & country (altitude 0.9 gives close regional detail)
         world.pointOfView(
-          { lat: target.lat, lng: target.lng, altitude: 0.95 },
-          1500
+          { lat: target.lat, lng: target.lng, altitude: 0.9 },
+          1400
         );
         if (controls) {
-          controls.autoRotateSpeed = 0.6; // gentle rotation while focused
+          controls.autoRotate = false; // pause rotation so India/hub remains steady in view
         }
       }
     } else {
       // Zoom out to global overview
-      world.pointOfView({ altitude: 2.2 }, 1300);
+      world.pointOfView({ altitude: 2.2 }, 1200);
       if (controls) {
+        controls.autoRotate = true;
         controls.autoRotateSpeed = 2.5;
       }
     }
@@ -165,7 +166,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     if (!worldRef.current) return;
     const currentPov = worldRef.current.pointOfView();
     worldRef.current.pointOfView(
-      { ...currentPov, altitude: Math.max(0.65, (currentPov.altitude || 2.2) * 0.75) },
+      { ...currentPov, altitude: Math.max(0.6, (currentPov.altitude || 2.2) * 0.75) },
       600
     );
   };
@@ -184,6 +185,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
     worldRef.current.pointOfView({ lat: 20, lng: 50, altitude: 2.2 }, 1200);
     const controls = worldRef.current.controls();
     if (controls) {
+      controls.autoRotate = true;
       controls.autoRotateSpeed = 2.5;
     }
   };
