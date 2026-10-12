@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -20,6 +21,16 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
   onClose,
   onContactClick,
 }) => {
+  useEffect(() => {
+    if (capabilityNum) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [capabilityNum]);
+
   if (!capabilityNum) return null;
 
   const renderSharedCTA = () => (
@@ -59,17 +70,18 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
     </div>
   );
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
+        key={capabilityNum}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 bg-white overflow-y-auto w-full min-h-screen flex flex-col font-sans text-slate-900"
+        className="fixed inset-0 z-[99999] bg-white overflow-y-auto w-full min-h-screen flex flex-col font-sans text-slate-900"
       >
         {/* Sticky Top Document Header */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-4">
             <button
               onClick={onClose}
@@ -999,18 +1011,212 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
               </div>
             )}
 
-            {/* ================= 08 & 09. ORACLE CLOUD ERP & DYNAMICS 365 ================= */}
-            {(capabilityNum === '08' || capabilityNum === '09') && (
-              <div className="space-y-8">
+            {/* ================= 08. ORACLE CLOUD ERP SERVICES ================= */}
+            {capabilityNum === '08' && (
+              <div className="space-y-10">
+                {/* Meta Header */}
                 <div className="border-b-2 border-slate-900 pb-6">
+                  <span className="px-3 py-1 rounded bg-red-50 text-red-700 font-mono text-xs font-black inline-block mb-3 border border-red-200">
+                    ENTERPRISE CLOUD PRACTICE
+                  </span>
                   <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
-                    {capabilityNum === '08' ? 'Oracle Cloud ERP Services' : 'Microsoft Dynamics 365 Services'}
+                    Oracle Cloud ERP Implementation and Support
                   </h1>
                   <p className="text-slate-700 text-base sm:text-lg font-medium leading-relaxed max-w-3xl">
-                    {capabilityNum === '08'
-                      ? 'Oracle Cloud ERP implementation, data migration, and application management services for enterprise landscapes.'
-                      : 'Microsoft Dynamics 365 ERP & CRM implementation, custom extensions, and SLA-driven support services.'}
+                    Clyptus modernizes finance, procurement, and supply chain operations using Oracle Fusion Cloud ERP. We deliver greenfield implementations, cloud migrations from on-premise E-Business Suite, and SLA-driven application support.
                   </p>
+                </div>
+
+                {/* Core Focus Modules */}
+                <div className="space-y-6">
+                  <div className="border-b border-slate-200 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 uppercase font-mono tracking-wider">
+                      Core Functional Modules
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Oracle Financials Cloud</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        General ledger, automated accounts payable matching, accounts receivable, fixed assets, cash management, and multi-GAAP multi-currency accounting.
+                      </p>
+                    </div>
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Procurement & SCM</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Strategic sourcing, supplier qualification management, automated purchase orders, real-time inventory tracking, and warehouse logistics.
+                      </p>
+                    </div>
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Data Migration & Accelerators</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Automated FBDI (File-Based Data Import) scripts, data validation frameworks, and mock cutover cycles to ensure zero data loss during transitions.
+                      </p>
+                    </div>
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">OIC & Enterprise Analytics</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Oracle Integration Cloud (OIC) adapters connecting third-party systems, coupled with real-time OTBI dashboards and Fusion Analytics Warehouse.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Implementation Methodology */}
+                <div className="space-y-6">
+                  <div className="border-b border-slate-200 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 uppercase font-mono tracking-wider">
+                      Implementation Lifecycle
+                    </h3>
+                  </div>
+                  <div className="divide-y divide-slate-200 border-y border-slate-200">
+                    <div className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h4 className="font-extrabold text-slate-900 text-base sm:w-1/3">1. Fit-to-Standard Blueprint</h4>
+                      <p className="text-sm text-slate-600 font-medium sm:w-2/3 leading-relaxed">
+                        Leveraging Oracle modern best practices to minimize custom rework and align operations to standard cloud capabilities.
+                      </p>
+                    </div>
+                    <div className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h4 className="font-extrabold text-slate-900 text-base sm:w-1/3">2. Agile Configuration Sprints</h4>
+                      <p className="text-sm text-slate-600 font-medium sm:w-2/3 leading-relaxed">
+                        Iterative room-pilots and sprint reviews ensuring finance and supply chain teams interact with live data early in the project.
+                      </p>
+                    </div>
+                    <div className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h4 className="font-extrabold text-slate-900 text-base sm:w-1/3">3. Quarterly Release Management</h4>
+                      <p className="text-sm text-slate-600 font-medium sm:w-2/3 leading-relaxed">
+                        Proactive testing protocols and release impact assessments for Oracle's quarterly mandatory cloud cadence.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Common Client Questions */}
+                <div className="space-y-6">
+                  <div className="border-b border-slate-200 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 uppercase font-mono tracking-wider">
+                      Common Client Questions
+                    </h3>
+                  </div>
+                  <div className="divide-y divide-slate-200 border-y border-slate-200">
+                    <div className="py-4 space-y-1.5">
+                      <h4 className="text-base font-extrabold text-slate-900">Can Oracle Cloud ERP coexist with existing on-premise systems?</h4>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                        Yes. Using Oracle Integration Cloud (OIC) and secure webhooks, we integrate cloud modules with legacy on-premise manufacturing and transactional databases.
+                      </p>
+                    </div>
+                    <div className="py-4 space-y-1.5">
+                      <h4 className="text-base font-extrabold text-slate-900">How do you support quarterly updates?</h4>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                        Our managed service includes automated regression test suites run during Oracle's staging window, ensuring zero disruption to live operations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ================= 09. MICROSOFT DYNAMICS 365 SERVICES ================= */}
+            {capabilityNum === '09' && (
+              <div className="space-y-10">
+                {/* Meta Header */}
+                <div className="border-b-2 border-slate-900 pb-6">
+                  <span className="px-3 py-1 rounded bg-blue-50 text-blue-700 font-mono text-xs font-black inline-block mb-3 border border-blue-200">
+                    MICROSOFT BUSINESS APPLICATIONS PRACTICE
+                  </span>
+                  <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
+                    Microsoft Dynamics 365 Services
+                  </h1>
+                  <p className="text-slate-700 text-base sm:text-lg font-medium leading-relaxed max-w-3xl">
+                    End-to-end Dynamics 365 ERP & CRM implementation, custom extensions, Power Platform automation, and SLA-driven managed support across finance, supply chain, and customer engagement.
+                  </p>
+                </div>
+
+                {/* Core Focus Modules */}
+                <div className="space-y-6">
+                  <div className="border-b border-slate-200 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 uppercase font-mono tracking-wider">
+                      Core Functional Capabilities
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Finance & Operations (F&O)</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Core financial ledger, global tax compliance, automated bank reconciliations, multi-entity consolidation, and cost accounting.
+                      </p>
+                    </div>
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Supply Chain Management (SCM)</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Advanced warehousing with mobile scanner integration, demand forecasting, procurement workflows, and shop floor execution.
+                      </p>
+                    </div>
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Customer Engagement (CRM)</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Dynamics 365 Sales, Customer Service, and Field Service with automated lead-to-opportunity tracking and SLA dispatch engines.
+                      </p>
+                    </div>
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <h4 className="font-extrabold text-slate-900 text-base">Power Platform & Azure Integration</h4>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        Power Apps low-code extensions, Power Automate enterprise workflows, Dataverse synchronization, and Dual-Write ERP integration.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Methodology & AMS */}
+                <div className="space-y-6">
+                  <div className="border-b border-slate-200 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 uppercase font-mono tracking-wider">
+                      Delivery & Support Governance
+                    </h3>
+                  </div>
+                  <div className="divide-y divide-slate-200 border-y border-slate-200">
+                    <div className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h4 className="font-extrabold text-slate-900 text-base sm:w-1/3">Upgrades from AX / NAV</h4>
+                      <p className="text-sm text-slate-600 font-medium sm:w-2/3 leading-relaxed">
+                        Code refactoring, database migration tooling, and automated schema conversions from legacy Dynamics AX 2012 / NAV to cloud D365.
+                      </p>
+                    </div>
+                    <div className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h4 className="font-extrabold text-slate-900 text-base sm:w-1/3">ALM & Azure DevOps</h4>
+                      <p className="text-sm text-slate-600 font-medium sm:w-2/3 leading-relaxed">
+                        Structured source control, automated build and release pipelines (CI/CD), and test automation preventing regression bugs.
+                      </p>
+                    </div>
+                    <div className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                      <h4 className="font-extrabold text-slate-900 text-base sm:w-1/3">SLA-Driven AMS</h4>
+                      <p className="text-sm text-slate-600 font-medium sm:w-2/3 leading-relaxed">
+                        L1 to L3 functional and technical support, hotfix deployments, and proactive monthly environment health audits.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Common Client Questions */}
+                <div className="space-y-6">
+                  <div className="border-b border-slate-200 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 uppercase font-mono tracking-wider">
+                      Common Client Questions
+                    </h3>
+                  </div>
+                  <div className="divide-y divide-slate-200 border-y border-slate-200">
+                    <div className="py-4 space-y-1.5">
+                      <h4 className="text-base font-extrabold text-slate-900">How do you handle Microsoft's One Version updates?</h4>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                        We manage regression testing via the Microsoft Regression Suite Automation Tool (RSAT) before deploying the service updates to production.
+                      </p>
+                    </div>
+                    <div className="py-4 space-y-1.5">
+                      <h4 className="text-base font-extrabold text-slate-900">Can D365 integrate with SAP or other legacy ERPs?</h4>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                        Yes. Using Azure Service Bus, REST APIs, or OData endpoints, we build bidirectional interfaces between Dynamics 365 and SAP or external supply chain systems.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1020,6 +1226,7 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
           </div>
         </main>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
