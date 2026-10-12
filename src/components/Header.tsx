@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
             <img 
               src="/logo.png" 
               alt="Clyptus Logo" 
-              className="h-9 sm:h-11 w-auto object-contain transition-transform" 
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all duration-300" 
             />
           </motion.button>
         </div>
