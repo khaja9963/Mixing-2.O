@@ -50,8 +50,9 @@ export const FullPageParticleBackground: React.FC = () => {
       '#E74905', // Slate grey particle
     ];
 
-    const AMBIENT_COUNT = 550;
-    const TOTAL_PARTICLE_COUNT = 5000;
+    const isMobile = width < 768;
+    const AMBIENT_COUNT = isMobile ? 320 : 550;
+    const TOTAL_PARTICLE_COUNT = isMobile ? 2400 : 5000;
     const particles: Particle[] = [];
     let logoPoints: LogoSamplePoint[] = [];
     let isLogoLoaded = false;

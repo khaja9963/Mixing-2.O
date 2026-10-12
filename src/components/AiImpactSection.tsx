@@ -277,7 +277,7 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
 
           return (
             <div
-              className="absolute z-20 flex flex-col items-center justify-center text-center px-4 sm:px-6 w-full max-w-6xl transition-all duration-75 ease-out pointer-events-auto"
+              className="absolute z-20 flex flex-col items-center justify-center text-center px-4 sm:px-6 w-full max-w-6xl max-h-[88vh] overflow-y-auto md:overflow-visible py-2 transition-all duration-75 ease-out pointer-events-auto"
               style={{
                 transform: `scale3d(${stage2Scale}, ${stage2Scale}, 1)`,
                 opacity: stage2Opacity,
@@ -285,34 +285,34 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
               }}
             >
               {/* 3 Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6 w-full text-left">
                 {/* Card 1: SAP */}
                 <div 
                   onClick={() => onSelectService?.('sap')}
                   style={{
                     opacity: p1,
-                    transform: `translate3d(0, ${(1 - p1) * 60}px, 0) scale(${0.94 + p1 * 0.06})`,
+                    transform: `translate3d(0, ${(1 - p1) * 45}px, 0) scale(${0.95 + p1 * 0.05})`,
                     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
                   }}
-                  className="group relative p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-blue-500/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  className="group relative p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
                   <div>
-                    <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center mb-6 shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform">
-                      <Database className="w-7 h-7" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 text-white flex items-center justify-center mb-3 sm:mb-6 shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform">
+                      <Database className="w-5 h-5 sm:w-7 sm:h-7" />
                     </div>
-                    <span className="text-[11px] font-mono font-extrabold text-blue-600 uppercase tracking-wider block mb-2">
+                    <span className="text-[10px] sm:text-[11px] font-mono font-extrabold text-blue-600 uppercase tracking-wider block mb-1.5 sm:mb-2">
                       ENTERPRISE ERP
                     </span>
-                    <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg sm:text-2xl font-black text-slate-900 mb-1.5 sm:mb-3 group-hover:text-blue-600 transition-colors">
                       SAP Solutions
                     </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-3 sm:mb-6 line-clamp-2 sm:line-clamp-none">
                       S/4HANA migration, custom ABAP & Fiori engineering, and full-spectrum SAP ecosystem transformation.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors pt-4 border-t border-slate-100">
+                  <div className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors pt-2.5 sm:pt-4 border-t border-slate-100">
                     <span>EXPLORE SAP SERVICES</span>
-                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </div>
                 </div>
 
@@ -321,28 +321,28 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
                   onClick={() => onSelectService?.('recruiting')}
                   style={{
                     opacity: p2,
-                    transform: `translate3d(0, ${(1 - p2) * 60}px, 0) scale(${0.94 + p2 * 0.06})`,
+                    transform: `translate3d(0, ${(1 - p2) * 45}px, 0) scale(${0.95 + p2 * 0.05})`,
                     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
                   }}
-                  className="group relative p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-indigo-500/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  className="group relative p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-indigo-500/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
                   <div>
-                    <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-6 shadow-md shadow-indigo-500/20 group-hover:scale-110 transition-transform">
-                      <Users className="w-7 h-7" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-3 sm:mb-6 shadow-md shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+                      <Users className="w-5 h-5 sm:w-7 sm:h-7" />
                     </div>
-                    <span className="text-[11px] font-mono font-extrabold text-indigo-600 uppercase tracking-wider block mb-2">
+                    <span className="text-[10px] sm:text-[11px] font-mono font-extrabold text-indigo-600 uppercase tracking-wider block mb-1.5 sm:mb-2">
                       TALENT & STAFFING
                     </span>
-                    <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-lg sm:text-2xl font-black text-slate-900 mb-1.5 sm:mb-3 group-hover:text-indigo-600 transition-colors">
                       IT Recruiting
                     </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-3 sm:mb-6 line-clamp-2 sm:line-clamp-none">
                       Specialized tech recruitment, dedicated engineering pods, and executive technical leadership placement.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors pt-4 border-t border-slate-100">
+                  <div className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors pt-2.5 sm:pt-4 border-t border-slate-100">
                     <span>EXPLORE IT RECRUITING</span>
-                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </div>
                 </div>
 
@@ -351,28 +351,28 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
                   onClick={() => onSelectService?.('ai')}
                   style={{
                     opacity: p3,
-                    transform: `translate3d(0, ${(1 - p3) * 60}px, 0) scale(${0.94 + p3 * 0.06})`,
+                    transform: `translate3d(0, ${(1 - p3) * 45}px, 0) scale(${0.95 + p3 * 0.05})`,
                     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
                   }}
-                  className="group relative p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-sky-500/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  className="group relative p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-sky-500/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
                   <div>
-                    <div className="w-14 h-14 rounded-2xl bg-sky-500 text-white flex items-center justify-center mb-6 shadow-md shadow-sky-500/20 group-hover:scale-110 transition-transform">
-                      <Sparkles className="w-7 h-7" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-sky-500 text-white flex items-center justify-center mb-3 sm:mb-6 shadow-md shadow-sky-500/20 group-hover:scale-110 transition-transform">
+                      <Sparkles className="w-5 h-5 sm:w-7 sm:h-7" />
                     </div>
-                    <span className="text-[11px] font-mono font-extrabold text-sky-600 uppercase tracking-wider block mb-2">
+                    <span className="text-[10px] sm:text-[11px] font-mono font-extrabold text-sky-600 uppercase tracking-wider block mb-1.5 sm:mb-2">
                       INTELLIGENT SYSTEMS
                     </span>
-                    <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-sky-600 transition-colors">
+                    <h3 className="text-lg sm:text-2xl font-black text-slate-900 mb-1.5 sm:mb-3 group-hover:text-sky-600 transition-colors">
                       AI Solutions
                     </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-3 sm:mb-6 line-clamp-2 sm:line-clamp-none">
                       Autonomous AI agents, enterprise GenAI architectures, machine learning models & predictive analytics.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-900 group-hover:text-sky-600 transition-colors pt-4 border-t border-slate-100">
+                  <div className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-900 group-hover:text-sky-600 transition-colors pt-2.5 sm:pt-4 border-t border-slate-100">
                     <span>EXPLORE AI SOLUTIONS</span>
-                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </div>
                 </div>
               </div>

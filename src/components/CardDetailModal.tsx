@@ -38,12 +38,12 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-3xl rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-hidden text-slate-900 flex flex-col md:flex-row">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl bg-white border border-slate-200 shadow-2xl text-slate-900 flex flex-col md:flex-row">
         {/* Left Side: Large Media Preview */}
         <div 
           onClick={handleGoToDetails}
-          className="relative md:w-1/2 h-64 md:h-auto overflow-hidden group cursor-pointer"
+          className="relative md:w-1/2 h-44 sm:h-64 md:h-auto shrink-0 overflow-hidden group cursor-pointer"
         >
           <img
             src={card.imageUrl}

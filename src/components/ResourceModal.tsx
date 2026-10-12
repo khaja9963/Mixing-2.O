@@ -11,15 +11,15 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ type, onClose, onN
   if (!type) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fadeIn select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fadeIn select-none">
       <div 
-        className="relative w-full max-w-4xl max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-200"
+        className="relative w-full max-w-4xl max-h-[88vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-6 sm:p-8 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 backdrop-blur-sm sticky top-0 z-10">
+        <div className="p-4 sm:p-6 lg:p-8 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 backdrop-blur-sm sticky top-0 z-10 gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center shrink-0">
               {type === 'privacy' && <ShieldCheck className="w-5 h-5" />}
               {type === 'terms' && <FileText className="w-5 h-5" />}
               {type === 'cookies' && <Cookie className="w-5 h-5" />}
@@ -27,15 +27,15 @@ export const ResourceModal: React.FC<ResourceModalProps> = ({ type, onClose, onN
               {type === 'insights' && <BookOpen className="w-5 h-5" />}
             </div>
             <div>
-              <h3 className="text-xl sm:text-2xl font-black text-white font-sans">
+              <h3 className="text-base sm:text-2xl font-black text-white font-sans leading-tight">
                 {type === 'privacy' && 'Privacy Policy'}
                 {type === 'terms' && 'Terms & Conditions'}
                 {type === 'cookies' && 'Cookie Policy'}
                 {type === 'faqs' && 'Frequently Asked Questions (FAQs)'}
                 {type === 'insights' && 'Enterprise Insights & Tech Blog'}
               </h3>
-              <p className="text-xs text-slate-400 font-medium">
-                Clyptus Software Solutions Enterprise Legal & Resource Center
+              <p className="text-[11px] sm:text-xs text-slate-400 font-medium">
+                Clyptus Enterprise Legal & Resource Center
               </p>
             </div>
           </div>

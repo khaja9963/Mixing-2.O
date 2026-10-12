@@ -98,13 +98,13 @@ export const SpiralSliderPreset = ({ cards }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden text-slate-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden text-slate-900">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 bg-slate-50">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-sky-600" />
-            <h3 className="font-bold text-slate-900 text-base">
+            <h3 className="font-bold text-slate-900 text-sm sm:text-base">
               Scrolltide Prompt & Component Code
             </h3>
           </div>
@@ -117,11 +117,11 @@ export const SpiralSliderPreset = ({ cards }) => {
         </div>
 
         {/* Tab Selection */}
-        <div className="flex items-center justify-between px-6 pt-4 pb-2 border-b border-slate-200 bg-slate-50/50">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 sm:px-6 pt-3 pb-2 border-b border-slate-200 bg-slate-50/50">
           <div className="flex gap-2">
             <button
               onClick={() => setActiveTab('prompt')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'prompt'
                   ? 'bg-sky-600 text-white shadow-md font-bold'
                   : 'bg-slate-100 text-slate-600 hover:text-slate-900'
@@ -151,27 +151,27 @@ export const SpiralSliderPreset = ({ cards }) => {
         </div>
 
         {/* Content Body */}
-        <div className="p-6 max-h-[420px] overflow-y-auto">
+        <div className="p-4 sm:p-6 max-h-[50vh] overflow-y-auto">
           {activeTab === 'prompt' ? (
             <div className="flex flex-col gap-3">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-xs leading-relaxed font-mono whitespace-pre-wrap shadow-inner">
+              <div className="p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-xs leading-relaxed font-mono whitespace-pre-wrap shadow-inner">
                 {card.prompt}
               </div>
               <p className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-                <Zap className="w-3.5 h-3.5 text-sky-600" /> Copy and paste this prompt into Cursor, Antigravity, Claude, or v0 to scaffold this exact component.
+                <Zap className="w-3.5 h-3.5 text-sky-600 shrink-0" /> Copy and paste this prompt into Cursor, Antigravity, Claude, or v0 to scaffold this exact component.
               </p>
             </div>
           ) : (
-            <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto leading-relaxed shadow-inner">
+            <pre className="p-3 sm:p-4 rounded-xl bg-slate-900 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto leading-relaxed shadow-inner">
               <code>{generatedCode}</code>
             </pre>
           )}
         </div>
 
         {/* Footer info */}
-        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-4 sm:px-6 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-xs text-slate-500">
           <span>Preset: <strong className="text-sky-700 font-bold">{card.title}</strong></span>
-          <span className="font-mono text-[11px] text-slate-500">Radius: {config.radius}px • Pitch: {config.pitch}px • Tilt: {config.tiltAngle}°</span>
+          <span className="font-mono text-[10px] sm:text-[11px] text-slate-500">Radius: {config.radius}px • Pitch: {config.pitch}px • Tilt: {config.tiltAngle}°</span>
         </div>
       </div>
     </div>

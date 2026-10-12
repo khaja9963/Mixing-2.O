@@ -288,11 +288,10 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({
       />
 
       {/* Assembly Canvas */}
-      <div className="relative flex items-center justify-center w-[800px] h-[450px] z-10">
+      <div className="relative flex items-center justify-center max-w-[800px] w-full px-4 aspect-[16/9] z-10">
         <canvas
           ref={canvasRef}
-          style={{ width: '800px', height: '450px' }}
-          className="w-[800px] h-[450px] pointer-events-none"
+          className="w-full h-full max-w-[800px] max-h-[450px] pointer-events-none"
         />
       </div>
 

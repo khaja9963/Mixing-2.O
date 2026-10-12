@@ -22,6 +22,13 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const lastProgressIntRef = useRef<number>(-1);
+  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Drag physics state
   const isDraggingRef = useRef<boolean>(false);
@@ -165,6 +172,10 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
   const numCards = cards.length;
   const angleStep = (2 * Math.PI * config.tightness) / numCards;
 
+  const isMobile = windowWidth < 768;
+  const responsiveRadius = isMobile ? Math.min(config.radius, Math.max(125, windowWidth * 0.35)) : config.radius;
+  const responsivePitch = isMobile ? config.pitch * 0.75 : config.pitch;
+
   return (
     /* Outer Scroll-Pinning Track (220vh creates smooth scroll distance without excessive gap) */
     <div ref={trackRef} className="relative w-full h-[220vh]">
@@ -193,18 +204,18 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
 
           return (
             <div 
-              className="absolute left-1/2 top-[35%] sm:top-[38%] -translate-y-1/2 z-0 pointer-events-none w-[300px] sm:w-[380px] lg:w-[460px] text-left transition-transform duration-300 ease-out"
+              className="absolute left-1/2 top-[32%] sm:top-[38%] -translate-y-1/2 z-0 pointer-events-none w-[240px] sm:w-[380px] lg:w-[460px] text-left transition-transform duration-300 ease-out"
               style={{
                 transform: `translate3d(calc(-50% + ${leftPosX}vw), -50%, 0)`,
                 opacity: textOpacity,
                 willChange: 'transform, opacity',
               }}
             >
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-100/90 border border-sky-300 text-[10px] font-mono tracking-widest text-sky-700 uppercase font-semibold mb-3 backdrop-blur-md shadow-sm">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-100/90 border border-sky-300 text-[10px] font-mono tracking-widest text-sky-700 uppercase font-semibold mb-2 sm:mb-3 backdrop-blur-md shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping" />
                 CLYPTUS
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
                 DESIGNED FOR <br />
                 <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
                   CHANGE.
@@ -232,18 +243,18 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
 
           return (
             <div 
-              className="absolute left-1/2 top-[62%] sm:top-[65%] -translate-y-1/2 z-0 pointer-events-none w-[300px] sm:w-[380px] lg:w-[460px] text-right transition-transform duration-300 ease-out"
+              className="absolute left-1/2 top-[65%] sm:top-[65%] -translate-y-1/2 z-0 pointer-events-none w-[240px] sm:w-[380px] lg:w-[460px] text-right transition-transform duration-300 ease-out"
               style={{
                 transform: `translate3d(calc(-50% + ${rightPosX}vw), -50%, 0)`,
                 opacity: textOpacity,
                 willChange: 'transform, opacity',
               }}
             >
-              <div className="inline-flex items-center justify-end gap-2 px-2.5 py-1 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-semibold mb-3 backdrop-blur-md shadow-sm">
+              <div className="inline-flex items-center justify-end gap-2 px-2.5 py-1 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-semibold mb-2 sm:mb-3 backdrop-blur-md shadow-sm">
                 CLYPTUS
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
                 BUILT FOR <br />
                 <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 bg-clip-text text-transparent">
                   GROWTH.
@@ -255,7 +266,7 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
 
         {/* 3D Perspective Stage (In Front of Text) */}
         <div 
-          className="relative z-10 w-full h-full flex items-center justify-center perspective-stage cursor-grab active:cursor-grabbing"
+          className="relative z-10 w-full h-full flex items-center justify-center perspective-stage cursor-grab active:cursor-grabbing touch-pan-y"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -279,13 +290,13 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
               const relIndex = i - rotationOffset;
               const angle = relIndex * angleStep;
               
-              const x = Math.sin(angle) * config.radius;
-              const y = relIndex * config.pitch;
-              const z = Math.cos(angle) * config.radius;
+              const x = Math.sin(angle) * responsiveRadius;
+              const y = relIndex * responsivePitch;
+              const z = Math.cos(angle) * responsiveRadius;
 
-              const zNorm = (z + config.radius) / (2 * config.radius);
+              const zNorm = (z + responsiveRadius) / (2 * responsiveRadius);
               const isFront = z > 0;
-              const isFocal = Math.abs(z - config.radius) < 40 && Math.abs(x) < 80;
+              const isFocal = Math.abs(z - responsiveRadius) < 40 && Math.abs(x) < 80;
 
               const rotY = (angle * 180) / Math.PI;
 
@@ -294,11 +305,11 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
                 : config.visibleFarCards ? (0.35 + zNorm * 0.4) : 0;
               
               const scale = 0.62 + zNorm * 0.28;
-              const zIndex = Math.round((z + config.radius) * 10) + (isFocal ? 1000 : 0);
+              const zIndex = Math.round((z + responsiveRadius) * 10) + (isFocal ? 1000 : 0);
 
-              let widthClass = 'w-48 h-72';
-              if (config.aspectRatio === 'landscape') widthClass = 'w-60 h-44';
-              else if (config.aspectRatio === 'square') widthClass = 'w-52 h-52';
+              let widthClass = 'w-36 h-56 sm:w-48 sm:h-72';
+              if (config.aspectRatio === 'landscape') widthClass = 'w-48 h-36 sm:w-60 sm:h-44';
+              else if (config.aspectRatio === 'square') widthClass = 'w-40 h-40 sm:w-52 sm:h-52';
 
               return (
                 <div

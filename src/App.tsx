@@ -177,8 +177,8 @@ export function App() {
         /* MAIN HOME PAGE & 3D SPIRAL STAGE */
         <main className="w-full flex-1 flex flex-col items-center">
           {/* Title Hero Banner */}
-          <div className="pt-8 pb-4 px-4 text-center flex flex-col items-center gap-3 max-w-3xl">
-            <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-[1.05]">
+          <div className="pt-6 sm:pt-8 pb-3 sm:pb-4 px-4 text-center flex flex-col items-center gap-2 sm:gap-3 max-w-3xl">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
               AI Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600">Solutions</span> That Change Your Business
             </h1>
           </div>

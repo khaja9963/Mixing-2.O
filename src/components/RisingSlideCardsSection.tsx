@@ -131,8 +131,18 @@ export const RisingSlideCardsSection: React.FC = () => {
     return () => cancelAnimationFrame(animId);
   }, [rawScrollProgress]);
 
+  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const totalCards = PORTFOLIO_CARDS.length;
-  const CARD_WIDTH_VW = 50;
+  const isMobile = windowWidth < 768;
+  const cardWidthVw = isMobile ? 100 : 50;
+  const visibleCardsCount = isMobile ? 1 : 2;
 
   // Breakdown of scroll phases over 1600vh track:
   // Phase 1 (0.00 -> 0.38): Feature Cards Freeze & Slide Animation (Cards 1 & 2 freeze first, then 3 & 4, then 5 & 6)
@@ -149,7 +159,7 @@ export const RisingSlideCardsSection: React.FC = () => {
     ? 0 
     : Math.max(0, Math.min(1, (smoothScrollProgress - 0.45) / 0.55));
 
-  const maxShiftVw = (totalCards - 2) * CARD_WIDTH_VW; 
+  const maxShiftVw = (totalCards - visibleCardsCount) * cardWidthVw; 
   const currentShiftVw = cardsProgress * maxShiftVw;
 
   return (
@@ -165,7 +175,7 @@ export const RisingSlideCardsSection: React.FC = () => {
 
         {/* CURTAIN LAYER (Z-10): Feature Cards Layer (Slides left like a theater curtain when opened) */}
         <div 
-          className="absolute inset-0 z-10 w-full h-full bg-[#e9e8e3] pt-20 sm:pt-24 pb-4 overflow-hidden shadow-2xl transition-transform duration-75 ease-out"
+          className="absolute inset-0 z-10 w-full h-full bg-[#e9e8e3] pt-16 sm:pt-24 pb-4 overflow-hidden shadow-2xl transition-transform duration-75 ease-out"
           style={{
             transform: `translate3d(${-curtainOpenProgress * 100}%, 0, 0)`,
             willChange: 'transform',
@@ -174,15 +184,13 @@ export const RisingSlideCardsSection: React.FC = () => {
           {/* Horizontal Card Track container with 0 gap */}
           <div className="flex w-full h-full gap-0 flex-nowrap relative">
             {PORTFOLIO_CARDS.map((card, idx) => {
-              // Position Math:
-              // 50vw width per card for 50/50 equal panel sizes touching side-by-side
-              const cardBaseX = idx * CARD_WIDTH_VW; // in vw
+              const cardBaseX = idx * cardWidthVw; // in vw
               const currentPosX = cardBaseX - currentShiftVw; // in vw
 
               // 1. Entrance Math: Rise UP from bottom-right (for cards entering from the right)
               let riseY = 0; // in vh
-              if (currentPosX > 50) {
-                const distanceToViewportRight = currentPosX - 50;
+              if (currentPosX > cardWidthVw) {
+                const distanceToViewportRight = currentPosX - cardWidthVw;
                 riseY = Math.min(85, distanceToViewportRight * 1.6);
               }
 
@@ -205,7 +213,7 @@ export const RisingSlideCardsSection: React.FC = () => {
                     transform: `translate3d(${totalX}vw, ${totalY}vh, 0)`,
                     willChange: 'transform',
                   }}
-                  className="absolute top-0 bottom-0 left-0 w-full md:w-1/2 md:min-w-[50vw] h-full shrink-0 flex flex-col justify-between p-8 sm:p-12 lg:p-16 border-r border-slate-300/40 bg-[#e9e8e3] text-slate-900 overflow-hidden group transition-all duration-75 ease-out"
+                  className="absolute top-0 bottom-0 left-0 w-full md:w-1/2 md:min-w-[50vw] h-full shrink-0 flex flex-col justify-between p-6 sm:p-12 lg:p-16 border-r border-slate-300/40 bg-[#e9e8e3] text-slate-900 overflow-hidden group transition-all duration-75 ease-out"
                 >
                   {card.type === 'text' ? (
                     /* TEXT PANEL (Matches Card 1 Reference Typography & Style) */
@@ -217,14 +225,14 @@ export const RisingSlideCardsSection: React.FC = () => {
                       </div>
 
                       {/* Main Headline (Exact Reference Typography) */}
-                      <div className="my-auto py-12">
-                        <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-normal text-[#1a1a1a] tracking-tight leading-[1.02] whitespace-pre-line">
+                      <div className="my-auto py-6 sm:py-12">
+                        <h2 className="text-3xl sm:text-6xl lg:text-7xl xl:text-8xl font-normal text-[#1a1a1a] tracking-tight leading-[1.05] whitespace-pre-line">
                           {card.title}
                         </h2>
                       </div>
 
                       {/* Bottom Action Link (Exact Reference Line Button) */}
-                      <div className="pt-6 border-t border-slate-300/50 flex items-center justify-between">
+                      <div className="pt-4 sm:pt-6 border-t border-slate-300/50 flex items-center justify-between">
                         <button className="inline-flex items-center gap-3 font-mono text-xs sm:text-sm tracking-widest text-slate-800 font-bold uppercase group-hover:text-black transition-colors border-b border-slate-400 pb-1">
                           {card.linkText}
                           <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

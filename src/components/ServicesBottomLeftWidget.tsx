@@ -81,11 +81,11 @@ export const ServicesBottomLeftWidget: React.FC<ServicesBottomLeftWidgetProps> =
   };
 
   return (
-    <div ref={containerRef} className="fixed bottom-6 left-6 z-50 font-sans select-none overflow-visible">
+    <div ref={containerRef} className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 font-sans select-none overflow-visible">
       
       {/* Detail Card Overlay Modal for Non-SAP Services */}
       {activeModalService && (
-        <div className="absolute bottom-20 left-0 w-72 sm:w-80 bg-white/98 rounded-3xl p-5 border border-slate-200 shadow-2xl z-50 flex flex-col justify-between animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="absolute bottom-16 sm:bottom-20 left-0 w-[calc(100vw-32px)] sm:w-80 max-w-sm bg-white/98 rounded-3xl p-5 border border-slate-200 shadow-2xl z-50 flex flex-col justify-between animate-in fade-in slide-in-from-bottom-4 duration-200">
           <div>
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-100">
               <span className="text-[10px] font-mono font-bold text-sky-600 uppercase">

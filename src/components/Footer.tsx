@@ -10,11 +10,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenResourceModal 
   return (
     <footer className="w-full bg-slate-900 text-slate-300 border-t border-slate-800 font-sans">
       {/* Main Footer Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-16 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-12 sm:pt-16 pb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-8 pb-12 border-b border-slate-800">
           
           {/* Column 1: Brand Section */}
-          <div className="lg:col-span-1.5 flex flex-col justify-between">
+          <div className="col-span-2 lg:col-span-1 flex flex-col justify-between mb-2 lg:mb-0">
             <div>
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-blue-500/30">

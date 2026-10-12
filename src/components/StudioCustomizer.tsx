@@ -67,11 +67,11 @@ export const StudioCustomizer: React.FC<StudioCustomizerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 transition-all duration-300 w-96">
+    <div className="fixed inset-x-3 bottom-3 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 transition-all duration-300 w-auto sm:w-96 max-h-[85vh] flex flex-col">
 
       {/* Expanded Controls Drawer */}
       {isOpen && (
-        <div className="flex flex-col gap-4 p-5 rounded-2xl bg-white/95 border border-slate-200 shadow-2xl backdrop-blur-2xl text-slate-900">
+        <div className="flex flex-col gap-4 p-4 sm:p-5 rounded-2xl bg-white/95 border border-slate-200 shadow-2xl backdrop-blur-2xl text-slate-900 max-h-[85vh] overflow-hidden">
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div className="flex items-center gap-2">
               <button
@@ -117,7 +117,7 @@ export const StudioCustomizer: React.FC<StudioCustomizerProps> = ({
           </div>
 
           {activeTab === 'params' ? (
-            <div className="flex flex-col gap-3.5 max-h-[480px] overflow-y-auto pr-1 text-xs">
+            <div className="flex flex-col gap-3.5 max-h-[55vh] sm:max-h-[480px] overflow-y-auto pr-1 text-xs">
               {/* Radius Slider */}
               <div className="flex flex-col gap-1">
                 <div className="flex justify-between text-slate-700 font-medium">
@@ -293,7 +293,7 @@ export const StudioCustomizer: React.FC<StudioCustomizerProps> = ({
             </div>
           ) : (
             /* Cards & Images Manager Tab */
-            <div className="flex flex-col gap-3 max-h-[480px] overflow-y-auto pr-1 text-xs">
+            <div className="flex flex-col gap-3 max-h-[55vh] sm:max-h-[480px] overflow-y-auto pr-1 text-xs">
               <div className="flex items-center justify-between pb-2">
                 <span className="text-slate-600 font-medium">Edit Card Images & Titles Live</span>
                 <button
