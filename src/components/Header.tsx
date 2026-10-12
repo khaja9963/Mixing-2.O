@@ -11,9 +11,7 @@ import {
   ShieldCheck, 
   BookOpen, 
   Users, 
-  Mail, 
-  Sparkles,
-  ChevronRight 
+  Mail 
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -29,7 +27,6 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate,
   onToggleCustomizer,
   onPlayIntro,
-  onOpen3dServices,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
@@ -201,33 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Apple-style Iridescent Services Button */}
-          {onOpen3dServices && (
-            <motion.button
-              whileHover={reduceMotion ? undefined : { scale: 1.03, y: -1 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.97, y: 0 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              onClick={onOpen3dServices}
-              className="relative group hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white text-xs font-bold shadow-[0_2px_12px_rgba(15,23,42,0.2)] hover:shadow-[0_4px_20px_rgba(56,189,248,0.35)] transition-all overflow-hidden border border-slate-700/60 cursor-pointer"
-            >
-              {/* Aurora Glow Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-500/25 via-indigo-500/25 to-purple-500/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              
-              {/* Animated Sparkle Icon */}
-              <motion.div
-                animate={reduceMotion ? undefined : { rotate: [0, 8, -8, 0], scale: [1, 1.08, 0.96, 1] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-                whileHover={reduceMotion ? undefined : { rotate: 180, scale: 1.25 }}
-                className="relative z-10 flex items-center justify-center"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:text-sky-300" />
-              </motion.div>
-              
-              <span className="relative z-10 bg-gradient-to-r from-white via-slate-100 to-sky-200 bg-clip-text text-transparent">
-                Services
-              </span>
-            </motion.button>
-          )}
+
 
           {/* Quick Studio 3D Customizer / Filter Toggle Button */}
           <motion.button
@@ -286,30 +257,7 @@ export const Header: React.FC<HeaderProps> = ({
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             className="lg:hidden w-full border-t border-slate-200/70 bg-white/92 backdrop-blur-3xl px-4 py-5 shadow-2xl overflow-hidden max-h-[calc(100vh-65px)] overflow-y-auto"
           >
-            {/* Quick 3D Services Banner */}
-            {onOpen3dServices && (
-              <motion.button
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  onOpen3dServices();
-                }}
-                className="w-full mb-4 p-3 rounded-2xl bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 border border-sky-200/80 flex items-center justify-between text-left group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center shadow-sm">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-extrabold text-slate-950 uppercase tracking-tight">Explore 3D Services Universe</div>
-                    <div className="text-[11px] text-slate-500 font-medium">SAP, AI Solutions & IT Recruiting</div>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-sky-600 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-            )}
+
 
             {/* Navigation Links Grid */}
             <div className="grid grid-cols-2 gap-2 mb-4">
