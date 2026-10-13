@@ -138,20 +138,17 @@ export const SapProjectsLedger: React.FC = () => {
             key={proj.id}
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.15 }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.4, delay: idx * 0.05 }}
             className="py-10 hover:bg-slate-50/50 transition-colors duration-200 px-3 sm:px-6 rounded-2xl"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               
-              {/* Left Column: Number, Accent Badge & Title (lg:col-span-5) */}
+              {/* Left Column: Number & Title (lg:col-span-5) */}
               <div className="lg:col-span-5 space-y-3">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono font-extrabold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
                     PROJECT {proj.number}
-                  </span>
-                  <span className={`text-xs font-mono font-bold px-3 py-0.5 rounded-full ${proj.badgeStyle}`}>
-                    {proj.badge}
                   </span>
                 </div>
 

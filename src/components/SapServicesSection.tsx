@@ -375,14 +375,6 @@ export const engagementModels = [
 
 export const SapServicesSection: React.FC<SapServicesSectionProps> = ({ onContactClick }) => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Set document title & metadata
   useEffect(() => {
@@ -428,19 +420,19 @@ export const SapServicesSection: React.FC<SapServicesSectionProps> = ({ onContac
       <section className="py-20 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto border-b border-slate-200/80">
         <div className="flex flex-col items-center text-center gap-6">
           
-          {/* Practice Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono font-bold text-slate-800 shadow-sm">
-              <Award className="w-3.5 h-3.5 text-blue-600" />
-              250+ SAP Consultants
+          {/* Practice Highlights */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs sm:text-sm font-bold tracking-wide">
+            <span className="inline-flex items-center gap-2 text-blue-600">
+              <Award className="w-4 h-4 text-blue-600" />
+              <span>250+ SAP Consultants</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono font-bold text-slate-800 shadow-sm">
-              <Calendar className="w-3.5 h-3.5 text-orange-500" />
-              Since 2014
+            <span className="inline-flex items-center gap-2 text-[#FF7138]">
+              <Calendar className="w-4 h-4 text-[#FF7138]" />
+              <span>Since 2014</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono font-bold text-slate-800 shadow-sm">
-              <Globe className="w-3.5 h-3.5 text-indigo-600" />
-              Offices in India, UAE & USA
+            <span className="inline-flex items-center gap-2 text-indigo-600">
+              <Globe className="w-4 h-4 text-indigo-600" />
+              <span>Offices in India, UAE & USA</span>
             </span>
           </div>
 
@@ -572,12 +564,12 @@ export const SapServicesSection: React.FC<SapServicesSectionProps> = ({ onContac
           {timelineMilestones.map((m) => (
             <motion.div
               key={m.year}
-              initial={{ opacity: 0, x: isMobile ? 35 : 400 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{
-                duration: isMobile ? 0.6 : 1.35,
-                ease: [0.22, 1, 0.36, 1],
+                duration: 0.5,
+                ease: [0.16, 1, 0.3, 1],
               }}
               className="relative pl-8 sm:pl-10"
             >

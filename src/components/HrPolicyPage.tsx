@@ -440,13 +440,7 @@ export const HrPolicyPage: React.FC<HrPolicyPageProps> = ({
 
         <div className="relative max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="max-w-3xl">
-            {/* Context Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0089D7]/10 border border-[#0089D7]/30 text-[#0089D7] shadow-xs mb-4">
-              <Sparkles className="w-4 h-4 text-[#0089D7] animate-pulse" />
-              <span className="text-xs font-mono font-extrabold tracking-widest uppercase text-[#0089D7]">
-                CLYPTUS HR POLICIES &amp; GOVERNANCE • {authenticatedUser?.toUpperCase()}
-              </span>
-            </div>
+
 
             {/* Main Title (Main Text Color #111A2E & Accent #0089D7 Gradient) */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-[#111A2E] mb-4">

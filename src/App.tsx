@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { SLIDER_CARDS, DEFAULT_SPIRAL_CONFIG } from './data/sliderData';
 import type { SliderCard, SpiralConfig } from './data/sliderData';
 import { Header } from './components/Header';
@@ -24,10 +25,11 @@ import { Services3dOrbUniverse } from './components/Services3dOrbUniverse';
 import { ServicesBottomLeftWidget } from './components/ServicesBottomLeftWidget';
 import { FloatingSocialTooltip } from './components/FloatingSocialTooltip';
 import { Footer } from './components/Footer';
+import { MountainFooter } from './components/MountainFooter';
 import { ResourceModal } from './components/ResourceModal';
 
 export function App() {
-  const [showIntro, setShowIntro] = useState<boolean>(false);
+  const [showIntro, setShowIntro] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<string>('Home');
   const [cards, setCards] = useState<SliderCard[]>(SLIDER_CARDS);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -96,20 +98,22 @@ export function App() {
         />
       )}
 
-      {/* Navigation Header */}
-      <Header
-        activePage={currentPage}
-        onNavigate={(page) => {
-          setCurrentPage(page);
-          if (page === 'Services') {
-            setIs3dServicesOpen(true);
-          }
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onToggleCustomizer={() => setIsCustomizerOpen(!isCustomizerOpen)}
-        onPlayIntro={() => {}}
-        onOpen3dServices={() => setIs3dServicesOpen(true)}
-      />
+      {/* Navigation Header - hidden while entry logo intro is playing */}
+      {!showIntro && (
+        <Header
+          activePage={currentPage}
+          onNavigate={(page) => {
+            setCurrentPage(page);
+            if (page === 'Services') {
+              setIs3dServicesOpen(true);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onToggleCustomizer={() => setIsCustomizerOpen(!isCustomizerOpen)}
+          onPlayIntro={() => setShowIntro(true)}
+          onOpen3dServices={() => setIs3dServicesOpen(true)}
+        />
+      )}
 
       {/* Conditional Page Views */}
       {currentPage === 'Contact' ? (
@@ -256,27 +260,43 @@ export function App() {
         </main>
       )}
 
-      {/* Bottom Left White Circular Services Widget */}
-      <ServicesBottomLeftWidget
-        onSelectService={(serviceId) => {
-          if (serviceId === 'home' || serviceId === 'Home') {
-            setCurrentPage('Home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (serviceId === 'sap') {
-            setCurrentPage('SAP');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (serviceId === 'ai') {
-            setCurrentPage('AI');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (serviceId === 'recruiting' || serviceId === 'staffing') {
-            setCurrentPage('Recruiting');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        }}
-      />
+      {/* Bottom Left White Circular Services Widget - hidden during intro */}
+      {!showIntro && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <ServicesBottomLeftWidget
+            onSelectService={(serviceId) => {
+              if (serviceId === 'home' || serviceId === 'Home') {
+                setCurrentPage('Home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (serviceId === 'sap') {
+                setCurrentPage('SAP');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (serviceId === 'ai') {
+                setCurrentPage('AI');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (serviceId === 'recruiting' || serviceId === 'staffing') {
+                setCurrentPage('Recruiting');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+          />
+        </motion.div>
+      )}
 
-      {/* Bottom Right Floating Social Tooltip Component */}
-      <FloatingSocialTooltip />
+      {/* Bottom Right Floating Social Tooltip Component - hidden during intro */}
+      {!showIntro && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <FloatingSocialTooltip />
+        </motion.div>
+      )}
 
       {/* 3D Services Universe Full-Screen Cinematic Modal */}
       <Services3dOrbUniverse
@@ -299,27 +319,57 @@ export function App() {
         }}
       />
 
-      {/* Full Brand Footer */}
-      <Footer
-        onNavigate={(page, sectionId) => {
-          setCurrentPage(page);
-          if (page === 'Services') {
-            setIs3dServicesOpen(true);
-          }
-          setTimeout(() => {
-            if (sectionId) {
-              const el = document.getElementById(sectionId);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-                return;
-              }
+      {/* Brand Footer: Mountain Sunset Footer on SAP, IT Recruiting, and AI pages; Ember Glow Footer on other pages */}
+      {currentPage === 'SAP' || currentPage === 'AI' || currentPage === 'Recruiting' || currentPage === 'IT Recruiting' ? (
+        <MountainFooter
+          onNavigate={(page, sectionId) => {
+            setCurrentPage(page);
+            if (page === 'Services') {
+              setIs3dServicesOpen(true);
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }, 100);
-        }}
-        onOpen3dServices={() => setIs3dServicesOpen(true)}
-        onOpenResourceModal={(type) => setActiveResourceModal(type)}
-      />
+            if (sectionId) {
+              let attempts = 0;
+              const tryScroll = () => {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                } else if (attempts < 10) {
+                  attempts++;
+                  setTimeout(tryScroll, 60);
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              };
+              setTimeout(tryScroll, 50);
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          onOpen3dServices={() => setIs3dServicesOpen(true)}
+          onOpenResourceModal={(type) => setActiveResourceModal(type)}
+        />
+      ) : (
+        <Footer
+          onNavigate={(page, sectionId) => {
+            setCurrentPage(page);
+            if (page === 'Services') {
+              setIs3dServicesOpen(true);
+            }
+            setTimeout(() => {
+              if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                  return;
+                }
+              }
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+          }}
+          onOpen3dServices={() => setIs3dServicesOpen(true)}
+          onOpenResourceModal={(type) => setActiveResourceModal(type)}
+        />
+      )}
 
       {/* Legal & Resource Modal (Privacy, Terms, FAQs, Insights, Cookies) */}
       <ResourceModal

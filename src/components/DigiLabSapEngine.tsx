@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -90,6 +89,8 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
 
   // HTML5 Canvas Engine (Persistent Smooth Loop)
   useEffect(() => {
+    if (isMobile) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -97,44 +98,7 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
 
     let animFrameId: number;
     let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = isMobile ? Math.max(700, window.innerHeight) : window.innerHeight);
-
-    // On mobile screens: Run a smooth, lightweight ambient particle canvas
-    if (isMobile) {
-      const mobileParticles = Array.from({ length: 22 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.18,
-        vy: (Math.random() - 0.5) * 0.18,
-        radius: Math.random() * 2.5 + 1.2,
-        alpha: Math.random() * 0.35 + 0.15,
-        color: ['#2563EB', '#EA580C', '#0284C7', '#7C3AED'][Math.floor(Math.random() * 4)],
-      }));
-
-      const renderMobile = () => {
-        ctx.clearRect(0, 0, width, height);
-
-        mobileParticles.forEach((p) => {
-          p.x += p.vx;
-          p.y += p.vy;
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.globalAlpha = p.alpha;
-          ctx.fill();
-        });
-
-        animFrameId = requestAnimationFrame(renderMobile);
-      };
-
-      renderMobile();
-      return () => cancelAnimationFrame(animFrameId);
-    }
+    let height = (canvas.height = window.innerHeight);
 
     const handleResize = () => {
       if (!canvas) return;
@@ -450,7 +414,6 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
         onUpdate: (self) => {
           const p = self.progress; // 0 to 1
           scrollProgressRef.current = p;
-          setScrollProgress(p);
 
           let newStage = 1;
           if (p < 0.2) {
@@ -460,11 +423,17 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
           } else {
             newStage = 3;
             const phaseIndex = Math.min(4, Math.floor(((p - 0.45) / 0.55) * 5));
-            setActivePhaseIndex(phaseIndex);
+            setActivePhaseIndex((prev) => (prev !== phaseIndex ? phaseIndex : prev));
           }
 
-          scrollStageRef.current = newStage;
-          setScrollStage(newStage);
+          if (scrollStageRef.current !== newStage) {
+            scrollStageRef.current = newStage;
+            setScrollStage(newStage);
+          }
+
+          // Throttle progress state updates to 0.01 increments to keep main thread smooth at 60fps
+          const roundedProgress = Math.round(p * 100) / 100;
+          setScrollProgress((prev) => (Math.abs(prev - roundedProgress) >= 0.01 ? roundedProgress : prev));
         },
       });
     }, containerRef);
@@ -653,80 +622,49 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
           </div>
         </div>
       ) : (
-        /* MOBILE VIEW (< 768px): Animated Ambient Hero + Interactive Staggered Timeline */
-        <div className="relative py-20 px-4 flex flex-col items-center text-center gap-6 bg-slate-50 overflow-hidden">
-          {/* Active Ambient Canvas Background on Mobile */}
-          <canvas
-            ref={canvasRef}
-            className="absolute inset-0 w-full h-full pointer-events-none z-0"
-          />
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative z-10 text-3xl font-black text-slate-900 leading-tight"
-          >
+        /* MOBILE FALLBACK (< 768px): Clean Hero + Vertical Timeline */
+        <div className="py-20 px-4 flex flex-col items-center text-center gap-6 bg-slate-50">
+          <h1 className="text-3xl font-black text-slate-900 leading-tight">
             Plan, move and run SAP S/4HANA — with{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-sky-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-sky-600">
               Clyptus.
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="relative z-10 text-slate-600 text-sm font-medium leading-relaxed max-w-sm"
-          >
+          <p className="text-slate-600 text-sm font-medium leading-relaxed">
             Clyptus helps businesses plan, implement, convert, develop and support SAP S/4HANA
             environments, from strategy through post-go-live operations.
-          </motion.p>
+          </p>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
+          <button
             onClick={onContactClick}
-            className="relative z-10 px-6 py-3.5 rounded-full bg-gradient-to-r from-orange-500 via-sky-600 to-indigo-600 text-white font-extrabold text-xs shadow-lg active:scale-95 transition-transform"
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-sky-600 text-white font-extrabold text-xs shadow-md"
           >
             Talk to Our SAP Team →
-          </motion.button>
+          </button>
 
-          {/* Mobile Staggered Animated Phase Cards */}
-          <div className="mt-8 w-full flex flex-col gap-3.5 text-left relative z-10">
-            {phases.map((p, idx) => {
+          {/* Mobile Vertical Timeline */}
+          <div className="mt-8 w-full flex flex-col gap-4 text-left">
+            {phases.map((p) => {
               const IconC = p.icon;
               return (
-                <motion.div
+                <div
                   key={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.45, delay: idx * 0.08 }}
-                  className="p-4.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-sm flex items-start gap-3.5"
+                  className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-start gap-3"
                 >
                   <div
-                    className="p-2.5 rounded-xl text-white shrink-0 mt-0.5 shadow-sm"
+                    className="p-2 rounded-xl text-white shrink-0 mt-0.5"
                     style={{ backgroundColor: p.color }}
                   >
                     <IconC className="w-4 h-4" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                        {p.num}
-                      </span>
-                      <h3 className="text-sm font-extrabold text-slate-900">{p.title}</h3>
-                    </div>
-                    <span className="text-[10px] font-mono font-extrabold text-sky-600 block mb-1">
-                      {p.metric}
-                    </span>
-                    <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                  <div>
+                    <h3 className="text-sm font-extrabold text-slate-900">{p.title}</h3>
+                    <p className="text-xs text-slate-600 font-medium leading-snug mt-1">
                       {p.desc}
                     </p>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
