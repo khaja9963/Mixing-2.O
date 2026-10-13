@@ -375,6 +375,14 @@ export const engagementModels = [
 
 export const SapServicesSection: React.FC<SapServicesSectionProps> = ({ onContactClick }) => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Set document title & metadata
   useEffect(() => {
@@ -564,11 +572,11 @@ export const SapServicesSection: React.FC<SapServicesSectionProps> = ({ onContac
           {timelineMilestones.map((m) => (
             <motion.div
               key={m.year}
-              initial={{ opacity: 0, x: 400 }}
+              initial={{ opacity: 0, x: isMobile ? 35 : 400 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{
-                duration: 1.35,
+                duration: isMobile ? 0.6 : 1.35,
                 ease: [0.22, 1, 0.36, 1],
               }}
               className="relative pl-8 sm:pl-10"

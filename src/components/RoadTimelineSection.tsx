@@ -81,7 +81,8 @@ export const RoadTimelineSection: React.FC<RoadTimelineSectionProps> = ({ extern
     scene.background = currentBg;
     scene.fog = new THREE.FogExp2(currentBg, 0.01);
 
-    const camera = new THREE.PerspectiveCamera(46, container.clientWidth / container.clientHeight, 0.1, 500);
+    const isMobileView = container.clientWidth < 768;
+    const camera = new THREE.PerspectiveCamera(isMobileView ? 58 : 46, container.clientWidth / container.clientHeight, 0.1, 500);
 
     // --- Lights ---
     scene.add(new THREE.AmbientLight(0xffffff, 0.9));
@@ -165,29 +166,57 @@ export const RoadTimelineSection: React.FC<RoadTimelineSectionProps> = ({ extern
       return new THREE.CanvasTexture(c);
     }
 
-    function makeTextSprite(title: string, subtitle: string) {
+    function makeTextSprite(title: string, subtitle: string, isMobileView: boolean) {
       const c = document.createElement('canvas');
-      c.width = 768;
-      const subtitleLines = subtitle.split('\n');
-      c.height = Math.max(200, 100 + subtitleLines.length * 48);
       const ctx = c.getContext('2d');
       if (!ctx) return new THREE.Sprite();
 
-      // Title - Solid Deep Dark Black (Transparent background, no white card)
-      ctx.fillStyle = '#050b14';
-      ctx.font = 'bold 42px sans-serif';
-      ctx.fillText(title, 20, 52);
+      const subtitleLines = subtitle.split('\n');
 
-      // Subtitle Bullet Lines - Solid High-Contrast Dark Black
-      ctx.fillStyle = '#050b14';
-      ctx.font = 'bold 24px sans-serif';
-      subtitleLines.forEach((line, index) => {
-        ctx.fillText(line, 20, 108 + index * 44);
-      });
+      if (isMobileView) {
+        c.width = 720;
+        c.height = Math.max(220, 80 + subtitleLines.length * 44);
+
+        // Transparent background (No white card background)
+
+        // Milestone Year Title (Bold high-contrast text, centered)
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#050b14';
+        ctx.font = 'bold 38px sans-serif';
+        ctx.fillText(title, c.width / 2, 48);
+
+        // Subtitle Bullet Lines (Clean high-contrast dark text directly on scene)
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#050b14';
+        ctx.font = 'bold 23px sans-serif';
+        subtitleLines.forEach((line, index) => {
+          ctx.fillText(line, c.width / 2, 98 + index * 42);
+        });
+      } else {
+        // Desktop: Transparent high-contrast typography (100% UNCHANGED)
+        c.width = 768;
+        c.height = Math.max(200, 100 + subtitleLines.length * 48);
+
+        // Title - Solid Deep Dark Black (Transparent background, no white card)
+        ctx.fillStyle = '#050b14';
+        ctx.font = 'bold 42px sans-serif';
+        ctx.fillText(title, 20, 52);
+
+        // Subtitle Bullet Lines - Solid High-Contrast Dark Black
+        ctx.fillStyle = '#050b14';
+        ctx.font = 'bold 24px sans-serif';
+        subtitleLines.forEach((line, index) => {
+          ctx.fillText(line, 20, 108 + index * 44);
+        });
+      }
 
       const tex = new THREE.CanvasTexture(c);
       const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
-      sprite.scale.set(6.4, 3.2, 1);
+      if (isMobileView) {
+        sprite.scale.set(4.6, 4.6 * (c.height / c.width), 1);
+      } else {
+        sprite.scale.set(6.4, 3.2, 1);
+      }
       return sprite;
     }
 
@@ -203,15 +232,25 @@ export const RoadTimelineSection: React.FC<RoadTimelineSectionProps> = ({ extern
       { progress: 0.78, title: '2023–2025', subtitle: '• Introduced SAP BTP Practice\n• Built SAP Add-on Solutions\n• Integrated SAP AI capabilities\n• Team expanded to 250+ SAP consultants', color: '#e8d4cf', side: -1, offset: new THREE.Vector3(0, 1.7, 8), imageUrl: '/milestone_2023_2025.jpg' }
     ];
 
-    const cardSideDistance = roadWidth / 2 + 2.5;
+    const isMobile = container.clientWidth < 768;
 
     projectList.forEach(item => {
       const group = new THREE.Group();
       const pos = curve.getPointAt(item.progress);
       const tangent = curve.getTangentAt(item.progress).normalize();
       const right = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
-      group.position.copy(pos).addScaledVector(right, item.side * cardSideDistance).add(item.offset);
-      group.rotation.y = Math.atan2(-tangent.x, -tangent.z);
+
+      if (isMobile) {
+        // Mobile: Positioned directly in the MIDDLE ON THE ROAD (zero lateral offset)
+        const roadForward = tangent.clone().multiplyScalar(4.8);
+        group.position.copy(pos).add(roadForward);
+        group.position.y = pos.y;
+        group.rotation.y = Math.atan2(-tangent.x, -tangent.z);
+      } else {
+        // Desktop: 100% UNCHANGED
+        group.position.copy(pos).addScaledVector(right, item.side * (roadWidth / 2 + 2.5)).add(item.offset);
+        group.rotation.y = Math.atan2(-tangent.x, -tangent.z);
+      }
 
       let mat: THREE.Material;
       if (item.imageUrl) {
@@ -230,15 +269,22 @@ export const RoadTimelineSection: React.FC<RoadTimelineSectionProps> = ({ extern
         });
       }
 
-      // 1. Image Plane Mesh - Positioned on one side (e.g. Right when side > 0, Left when side < 0)
+      // 1. Image Plane Mesh (Centered directly in middle on road, above text)
       const cardMesh = new THREE.Mesh(cardGeo, mat);
-      cardMesh.position.set(item.side > 0 ? 3.4 : -3.4, 0, 0);
+      const meshX = isMobile ? 0 : (item.side > 0 ? 3.4 : -3.4);
+      const meshY = isMobile ? 2.35 : 0;
+      cardMesh.position.set(meshX, meshY, 0);
+      if (isMobile) {
+        cardMesh.scale.set(0.62, 0.62, 1);
+      }
       group.add(cardMesh);
 
-      // 2. Text Sprite Card - Positioned on the OPPOSITE side so text never overlays image!
-      const sprite = makeTextSprite(item.title, item.subtitle);
+      // 2. Text Sprite Card (Centered directly in middle on road, below image)
+      const sprite = makeTextSprite(item.title, item.subtitle, isMobile);
       sprite.material.fog = false;
-      sprite.position.set(item.side > 0 ? -3.4 : 3.4, 0, 0.1);
+      const spriteX = isMobile ? 0 : (item.side > 0 ? -3.4 : 3.4);
+      const spriteY = isMobile ? 0.45 : 0;
+      sprite.position.set(spriteX, spriteY, 0.05);
       group.add(sprite);
 
       scene.add(group);
@@ -285,6 +331,7 @@ export const RoadTimelineSection: React.FC<RoadTimelineSectionProps> = ({ extern
 
     const handleResize = () => {
       if (!container) return;
+      camera.fov = container.clientWidth < 768 ? 58 : 46;
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);

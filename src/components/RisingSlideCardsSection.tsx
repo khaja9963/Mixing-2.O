@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { RoadTimelineSection } from './RoadTimelineSection';
 
 interface ProjectCard {
@@ -163,8 +162,8 @@ export const RisingSlideCardsSection: React.FC = () => {
   const currentShiftVw = cardsProgress * maxShiftVw;
 
   return (
-    /* Outer Pinned Scroll Track (1600vh gives ample slow-motion track for 3D road timeline) */
-    <div ref={trackRef} className="relative w-full h-[1600vh] bg-[#e9e8e3] select-none font-sans border-t border-slate-300/60">
+    /* Outer Pinned Scroll Track (Shorter on mobile to prevent excessive scrolling) */
+    <div ref={trackRef} className={`relative w-full ${isMobile ? 'h-[600vh]' : 'h-[1600vh]'} bg-[#e9e8e3] select-none font-sans border-t border-slate-300/60`}>
       {/* Sticky Full-Screen Viewport Stage */}
       <div className="sticky top-0 w-full h-screen overflow-hidden">
         
@@ -216,34 +215,23 @@ export const RisingSlideCardsSection: React.FC = () => {
                   className="absolute top-0 bottom-0 left-0 w-full md:w-1/2 md:min-w-[50vw] h-full shrink-0 flex flex-col justify-between p-6 sm:p-12 lg:p-16 border-r border-slate-300/40 bg-[#e9e8e3] text-slate-900 overflow-hidden group transition-all duration-75 ease-out"
                 >
                   {card.type === 'text' ? (
-                    /* TEXT PANEL (Matches Card 1 Reference Typography & Style) */
-                    <div className="w-full h-full flex flex-col justify-between z-10">
-                      {/* Top Tagline Badge */}
-                      <div className="flex items-center gap-2 font-mono text-xs tracking-widest text-slate-500 font-bold uppercase">
-                        <span className="w-2 h-2 rounded-full bg-slate-900 animate-pulse" />
+                    /* TEXT PANEL */
+                    <div className="w-full h-full flex flex-col justify-center items-start text-left z-10 px-2 sm:px-6">
+                      <span className="text-xs sm:text-xs font-mono font-extrabold text-sky-600 tracking-wider uppercase mb-3 sm:mb-4 bg-sky-100/60 px-3.5 py-1.5 rounded-full border border-sky-200/50">
                         {card.category}
-                      </div>
-
-                      {/* Main Headline (Exact Reference Typography) */}
-                      <div className="my-auto py-6 sm:py-12">
-                        <h2 className="text-3xl sm:text-6xl lg:text-7xl xl:text-8xl font-normal text-[#1a1a1a] tracking-tight leading-[1.05] whitespace-pre-line">
-                          {card.title}
-                        </h2>
-                      </div>
-
-                      {/* Bottom Action Link (Exact Reference Line Button) */}
-                      <div className="pt-4 sm:pt-6 border-t border-slate-300/50 flex items-center justify-between">
-                        <button className="inline-flex items-center gap-3 font-mono text-xs sm:text-sm tracking-widest text-slate-800 font-bold uppercase group-hover:text-black transition-colors border-b border-slate-400 pb-1">
-                          {card.linkText}
-                          <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                        </button>
-                      </div>
+                      </span>
+                      <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-[#1a1a1a] tracking-tight leading-[1.05] whitespace-pre-line mb-5 sm:mb-4">
+                        {card.title}
+                      </h2>
+                      <span className="text-sm sm:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                        {card.linkText} →
+                      </span>
                     </div>
                   ) : (
-                    /* PHOTO PANEL (Full-Height Cover Image) */
-                    <div className="w-full h-full flex flex-col justify-between z-10">
-                      {/* Card Graphic Frame / Full-Height Image Cover */}
-                      <div className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-200 shadow-sm border border-slate-300/40">
+                    /* PHOTO PANEL (Proportioned Executive Card on Mobile, Full-Height Split Card on Desktop) */
+                    <div className="w-full h-full flex flex-col justify-center items-center z-10 px-2 sm:px-0">
+                      {/* Card Graphic Frame */}
+                      <div className="relative w-full max-w-[290px] sm:max-w-none h-auto max-h-[50vh] sm:max-h-none sm:h-full aspect-[3/4] sm:aspect-auto rounded-2xl overflow-hidden bg-slate-200 shadow-xl sm:shadow-sm border border-slate-300/40 my-auto">
                         {card.imageUrl ? (
                           <img
                             src={card.imageUrl}
@@ -255,21 +243,15 @@ export const RisingSlideCardsSection: React.FC = () => {
                         )}
                         
                         {/* Gradient Dark Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
-                        {/* Top Badge inside Image */}
-                        {card.badge && (
-                          <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
-                            <span className="px-3.5 py-1.5 rounded-full text-[10px] font-mono tracking-widest font-bold uppercase bg-white/90 backdrop-blur-md text-slate-900 border border-white/50 shadow-sm">
-                              {card.badge}
-                            </span>
-                          </div>
-                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
                         {/* Overlay Title inside Image */}
                         {card.subtitle && (
-                          <div className="absolute bottom-6 left-6 right-6">
-                            <h3 className="text-3xl sm:text-5xl lg:text-6xl font-normal text-white tracking-tight drop-shadow-md">
+                          <div className="absolute bottom-5 sm:bottom-6 left-5 sm:left-6 right-5 sm:right-6">
+                            <span className="text-xs sm:text-xs font-mono font-extrabold text-sky-400 uppercase tracking-wider mb-1.5 block drop-shadow">
+                              {card.category}
+                            </span>
+                            <h3 className="text-2xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight drop-shadow-md">
                               {card.subtitle}
                             </h3>
                           </div>

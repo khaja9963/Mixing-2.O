@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
       }
     };
 
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
         setIsMobileMenuOpen(false);
       }
@@ -57,11 +57,13 @@ export const Header: React.FC<HeaderProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
 
     return () => {
       document.body.style.overflow = originalOverflow;
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [isMobileMenuOpen]);
 
@@ -142,6 +144,23 @@ export const Header: React.FC<HeaderProps> = ({
             <ClyptusLogo 
               className="h-11 sm:h-14 md:h-[56px] w-auto object-contain transition-transform group-hover:scale-[1.02]" 
             />
+          </motion.button>
+        </div>
+
+        {/* Mobile Center Navigation Pill (Matches Desktop Menu Pill) */}
+        <div className="lg:hidden flex items-center z-10">
+          <motion.button
+            whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-xl border border-slate-200 shadow-xs text-xs font-bold text-slate-800 hover:text-sky-600 transition-all cursor-pointer"
+            aria-label="Toggle Navigation Menu"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+            <span className="text-slate-900 font-extrabold max-w-[85px] truncate">{activePage}</span>
+            <span className="text-slate-300 font-normal">|</span>
+            <span className="text-sky-600 font-bold flex items-center gap-0.5">
+              Menu <ChevronRight className="w-3.5 h-3.5 text-sky-600" />
+            </span>
           </motion.button>
         </div>
 

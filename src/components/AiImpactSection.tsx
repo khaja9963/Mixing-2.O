@@ -97,14 +97,15 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Node particle data
-    const numNodes = 50;
+    // Node particle data (lighter count on mobile for smooth 60fps)
+    const isMobile = window.innerWidth < 768;
+    const numNodes = isMobile ? 22 : 50;
     const nodes = Array.from({ length: numNodes }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.7,
-      vy: (Math.random() - 0.5) * 0.7,
-      radius: Math.random() * 3.5 + 2,
+      vx: (Math.random() - 0.5) * (isMobile ? 0.4 : 0.7),
+      vy: (Math.random() - 0.5) * (isMobile ? 0.4 : 0.7),
+      radius: Math.random() * 2.5 + 1.5,
       isBlue: Math.random() > 0.6,
     }));
 
@@ -170,8 +171,12 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
     };
   }, []);
 
+  const isMobileScreen = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+
   // Stage 1: "SMART IT SERVICES TO ELEVATE YOUR BUSINESS SUCCESS." (progress 0.0 -> 0.42)
-  const stage1Scale = 1.0 + Math.pow(Math.min(1, progress / 0.40), 1.2) * 0.25;
+  const stage1Scale = isMobileScreen 
+    ? 1.0 + Math.pow(Math.min(1, progress / 0.40), 1.2) * 0.08 
+    : 1.0 + Math.pow(Math.min(1, progress / 0.40), 1.2) * 0.25;
   const stage1Opacity = progress < 0.28 
     ? 1.0 
     : progress < 0.42 
@@ -179,25 +184,16 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
       : 0.0;
   const stage1Blur = progress > 0.28 ? (progress - 0.28) * 8 : 0;
 
-  // Stage 2: "NO DEMOS. NO DECKS. ADAPTIVE DESIGN AND CONTENT STRATEGY." (progress 0.42 -> 1.0)
-  const stage2Opacity = progress < 0.42 
+  // Stage 2: 3 Cards (progress 0.42 -> 1.0)
+  const stage2Opacity = progress < 0.40 
     ? 0.0 
-    : progress < 0.58 
-      ? (progress - 0.42) / 0.16 
-      : progress < 0.88 
+    : progress < 0.52 
+      ? (progress - 0.40) / 0.12 
+      : progress < 0.90 
         ? 1.0 
-        : Math.max(0, 1.0 - (progress - 0.88) / 0.12);
+        : Math.max(0, 1.0 - (progress - 0.90) / 0.10);
   
-  const stage2Scale = 0.98 + (Math.max(0, progress - 0.42) / 0.58) * 0.10;
-
-  // Floating network labels
-  const labels = [
-    { text: 'AUTOMATION', pos: 'top-20 left-12 md:left-24' },
-    { text: 'INTELLIGENCE', pos: 'top-32 right-12 md:right-28' },
-    { text: 'WORKFLOWS', pos: 'bottom-32 left-16 md:left-36' },
-    { text: 'DECISION MAKING', pos: 'bottom-24 right-16 md:right-32' },
-    { text: 'GENERATIVE AI', pos: 'bottom-12 left-1/2 -translate-x-1/2' },
-  ];
+  const stage2Scale = 0.98 + (Math.max(0, progress - 0.42) / 0.58) * 0.08;
 
   return (
     <div ref={containerRef} className="relative w-full h-[280vh] bg-slate-50">
@@ -210,20 +206,6 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
           className="absolute inset-0 pointer-events-none z-0"
         />
 
-        {/* Floating Feature Labels */}
-        {labels.map((lbl, idx) => (
-          <div
-            key={idx}
-            className={`absolute ${lbl.pos} z-10 hidden sm:flex items-center gap-2 font-mono text-[11px] tracking-widest font-bold text-slate-600 uppercase pointer-events-none transition-opacity duration-300`}
-            style={{
-              opacity: Math.max(0, 1 - progress * 1.8),
-            }}
-          >
-            <span className="w-2 h-2 bg-blue-600 rounded-sm" />
-            <span>{lbl.text}</span>
-          </div>
-        ))}
-
         {/* STAGE 1: Scroll-Driven Zooming Typography with Giggle/Jiggle Effect ("SMART IT SERVICES TO ELEVATE YOUR BUSINESS SUCCESS.") */}
         {stage1Opacity > 0 && (
           <div
@@ -235,7 +217,7 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
               willChange: 'transform, opacity, filter',
             }}
           >
-            <div className="flex flex-col items-center justify-center leading-[0.9] tracking-tight uppercase font-black text-slate-950 text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem]">
+            <div className="flex flex-col items-center justify-center leading-[1.05] sm:leading-[0.95] tracking-tight uppercase font-black text-slate-950 text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] max-w-xs sm:max-w-none">
               {/* Line 1: SMART IT */}
               <div className="text-slate-950 font-black">
                 <GiggleText text="SMART IT" baseDelay={0} />
@@ -259,25 +241,30 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
           </div>
         )}
 
-        {/* STAGE 2: 3 Core Service Cards (SAP, IT Recruiting, AI) replacing Adaptive Design */}
+        {/* STAGE 2: 3 Core Service Cards (SAP, IT Recruiting, AI) */}
         {stage2Opacity > 0 && (() => {
           // Staggered scroll-in progress for cards 1, 2, 3
-          const card1In = Math.max(0, Math.min(1, (progress - 0.42) / 0.14));
-          const card2In = Math.max(0, Math.min(1, (progress - 0.45) / 0.14));
-          const card3In = Math.max(0, Math.min(1, (progress - 0.48) / 0.14));
+          const card1In = Math.max(0, Math.min(1, (progress - 0.40) / 0.12));
+          const card2In = Math.max(0, Math.min(1, (progress - 0.43) / 0.12));
+          const card3In = Math.max(0, Math.min(1, (progress - 0.46) / 0.12));
 
           // Staggered scroll-out progress for cards 1, 2, 3
-          const card1Out = Math.max(0, Math.min(1, (0.98 - progress) / 0.14));
-          const card2Out = Math.max(0, Math.min(1, (0.95 - progress) / 0.14));
-          const card3Out = Math.max(0, Math.min(1, (0.92 - progress) / 0.14));
+          const card1Out = Math.max(0, Math.min(1, (0.98 - progress) / 0.12));
+          const card2Out = Math.max(0, Math.min(1, (0.96 - progress) / 0.12));
+          const card3Out = Math.max(0, Math.min(1, (0.94 - progress) / 0.12));
 
-          const p1 = Math.min(card1In, card1Out);
-          const p2 = Math.min(card2In, card2Out);
-          const p3 = Math.min(card3In, card3Out);
+          const rawP1 = Math.min(card1In, card1Out);
+          const rawP2 = Math.min(card2In, card2Out);
+          const rawP3 = Math.min(card3In, card3Out);
+
+          // On mobile screens, maintain high contrast and solid card opacity
+          const p1 = isMobileScreen ? (progress > 0.42 && progress < 0.94 ? 1 : rawP1) : rawP1;
+          const p2 = isMobileScreen ? (progress > 0.44 && progress < 0.94 ? 1 : rawP2) : rawP2;
+          const p3 = isMobileScreen ? (progress > 0.46 && progress < 0.94 ? 1 : rawP3) : rawP3;
 
           return (
             <div
-              className="absolute z-20 flex flex-col items-center justify-center text-center px-4 sm:px-6 w-full max-w-6xl max-h-[88vh] overflow-y-auto md:overflow-visible py-2 transition-all duration-75 ease-out pointer-events-auto"
+              className="absolute z-20 flex flex-col items-center justify-center text-center px-3 sm:px-6 w-full max-w-6xl max-h-[92vh] overflow-y-auto md:overflow-visible py-2 transition-all duration-75 ease-out pointer-events-auto"
               style={{
                 transform: `scale3d(${stage2Scale}, ${stage2Scale}, 1)`,
                 opacity: stage2Opacity,
@@ -285,16 +272,16 @@ export const AiImpactSection: React.FC<AiImpactSectionProps> = ({ onSelectServic
               }}
             >
               {/* 3 Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6 w-full text-left">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-6 w-full text-left">
                 {/* Card 1: SAP */}
                 <div 
                   onClick={() => onSelectService?.('sap')}
                   style={{
                     opacity: p1,
-                    transform: `translate3d(0, ${(1 - p1) * 45}px, 0) scale(${0.95 + p1 * 0.05})`,
+                    transform: `translate3d(0, ${(1 - p1) * (isMobileScreen ? 20 : 45)}px, 0) scale(${0.96 + p1 * 0.04})`,
                     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
                   }}
-                  className="group relative p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  className="group relative p-3.5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
                   <div>
                     <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 text-white flex items-center justify-center mb-3 sm:mb-6 shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform">

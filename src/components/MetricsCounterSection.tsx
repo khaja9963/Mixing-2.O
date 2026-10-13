@@ -106,10 +106,6 @@ export const MetricsCounterSection: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-20 relative z-10 flex flex-col items-center">
         {/* Section Header (Always 100% visible - No fade-in/fade-out) */}
         <div className="text-center mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-[11px] font-mono tracking-widest text-sky-700 font-bold uppercase mb-3 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-            PROVEN PERFORMANCE METRICS
-          </div>
           <h2 className="text-3xl sm:text-5xl font-black text-slate-950 uppercase tracking-tight leading-tight">
             MEASURABLE <span className="bg-gradient-to-r from-sky-500 via-blue-600 to-purple-600 bg-clip-text text-transparent">BUSINESS IMPACT.</span>
           </h2>

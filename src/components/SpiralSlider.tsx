@@ -127,10 +127,16 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
     
     const dx = clientX - startXRef.current;
     const dy = clientY - startYRef.current;
+
+    // For touch devices, if vertical swipe is stronger, let page scroll natively
+    if ('touches' in e && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      return;
+    }
+
     const now = performance.now();
     const dt = Math.max(1, now - lastMouseTimeRef.current);
 
-    const movement = (dx - dy * 0.5) * 0.0012;
+    const movement = (dx - dy * 0.3) * (isMobile ? 0.0022 : 0.0012);
     targetOffsetRef.current -= movement;
     velocityRef.current = -movement / (dt / 16);
 
@@ -173,8 +179,8 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
   const angleStep = (2 * Math.PI * config.tightness) / numCards;
 
   const isMobile = windowWidth < 768;
-  const responsiveRadius = isMobile ? Math.min(config.radius, Math.max(125, windowWidth * 0.35)) : config.radius;
-  const responsivePitch = isMobile ? config.pitch * 0.75 : config.pitch;
+  const responsiveRadius = isMobile ? Math.min(config.radius, Math.max(115, windowWidth * 0.28)) : config.radius;
+  const responsivePitch = isMobile ? config.pitch * 0.65 : config.pitch;
 
   return (
     /* Outer Scroll-Pinning Track (220vh creates smooth scroll distance without excessive gap) */
@@ -200,22 +206,18 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
           else if (scrollProgress >= 0.80 && scrollProgress < 0.90) textOpacity = 1.0;
           else textOpacity = Math.max(0, 1.0 - (scrollProgress - 0.90) / 0.10);
 
-          const leftPosX = -60 + smoothProgress * 120;
+          const leftPosX = isMobile ? (-12 + smoothProgress * 24) : (-60 + smoothProgress * 120);
 
           return (
             <div 
-              className="absolute left-1/2 top-[32%] sm:top-[38%] -translate-y-1/2 z-0 pointer-events-none w-[240px] sm:w-[380px] lg:w-[460px] text-left transition-transform duration-300 ease-out"
+              className="absolute left-1/2 top-[22%] sm:top-[38%] -translate-y-1/2 z-0 pointer-events-none w-[88vw] max-w-[280px] sm:max-w-[380px] lg:max-w-[460px] text-left transition-transform duration-300 ease-out"
               style={{
                 transform: `translate3d(calc(-50% + ${leftPosX}vw), -50%, 0)`,
                 opacity: textOpacity,
                 willChange: 'transform, opacity',
               }}
             >
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-100/90 border border-sky-300 text-[10px] font-mono tracking-widest text-sky-700 uppercase font-semibold mb-2 sm:mb-3 backdrop-blur-md shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping" />
-                CLYPTUS
-              </div>
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
+              <h2 className="text-xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
                 DESIGNED FOR <br />
                 <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
                   CHANGE.
@@ -239,22 +241,18 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
           else if (scrollProgress >= 0.80 && scrollProgress < 0.90) textOpacity = 1.0;
           else textOpacity = Math.max(0, 1.0 - (scrollProgress - 0.90) / 0.10);
 
-          const rightPosX = 60 - smoothProgress * 120;
+          const rightPosX = isMobile ? (12 - smoothProgress * 24) : (60 - smoothProgress * 120);
 
           return (
             <div 
-              className="absolute left-1/2 top-[65%] sm:top-[65%] -translate-y-1/2 z-0 pointer-events-none w-[240px] sm:w-[380px] lg:w-[460px] text-right transition-transform duration-300 ease-out"
+              className="absolute left-1/2 top-[76%] sm:top-[65%] -translate-y-1/2 z-0 pointer-events-none w-[88vw] max-w-[280px] sm:max-w-[380px] lg:max-w-[460px] text-right transition-transform duration-300 ease-out"
               style={{
                 transform: `translate3d(calc(-50% + ${rightPosX}vw), -50%, 0)`,
                 opacity: textOpacity,
                 willChange: 'transform, opacity',
               }}
             >
-              <div className="inline-flex items-center justify-end gap-2 px-2.5 py-1 rounded-full bg-emerald-100/90 border border-emerald-300 text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-semibold mb-2 sm:mb-3 backdrop-blur-md shadow-sm">
-                CLYPTUS
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
+              <h2 className="text-xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.05] text-slate-900 uppercase drop-shadow-sm">
                 BUILT FOR <br />
                 <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 bg-clip-text text-transparent">
                   GROWTH.
@@ -296,27 +294,51 @@ export const SpiralSlider: React.FC<SpiralSliderProps> = ({
 
               const zNorm = (z + responsiveRadius) / (2 * responsiveRadius);
               const isFront = z > 0;
-              const isFocal = Math.abs(z - responsiveRadius) < 40 && Math.abs(x) < 80;
+              const isFocal = isMobile 
+                ? Math.abs(relIndex) < 0.5 
+                : (Math.abs(z - responsiveRadius) < 40 && Math.abs(x) < 80);
 
-              const rotY = (angle * 180) / Math.PI;
+              // On mobile: Normal horizontal carousel motion with generous gap, NO UP AND DOWN motion (y = 0)
+              const mobileRadius = Math.max(260, windowWidth * 0.72);
+              const mobileAngle = relIndex * (angleStep * 1.35); // Generous angular spacing to ensure clear gap between cards
 
-              const opacity = isFront 
-                ? 0.94 + zNorm * 0.06 
-                : config.visibleFarCards ? (0.35 + zNorm * 0.4) : 0;
+              const finalX = isMobile ? Math.sin(mobileAngle) * mobileRadius : x;
+              const finalY = isMobile ? 0 : y; // "no up and down card"
+              const finalZ = isMobile ? Math.cos(mobileAngle) * (mobileRadius * 0.4) : z;
+              const rotY = isMobile ? ((mobileAngle * 180) / Math.PI) * 0.3 : ((angle * 180) / Math.PI);
+
+              // On mobile: ONLY middle card animation is shown when scrolling
+              let opacity = 0;
+              if (isMobile) {
+                const distFromCenter = Math.abs(relIndex);
+                if (distFromCenter < 0.85) {
+                  // Only middle card shows cleanly during scroll animation
+                  opacity = Math.max(0, 1 - Math.pow(distFromCenter / 0.85, 2));
+                } else {
+                  opacity = 0;
+                }
+              } else {
+                // Desktop: 100% UNCHANGED
+                opacity = isFront 
+                  ? (0.94 + zNorm * 0.06) 
+                  : (config.visibleFarCards ? (0.35 + zNorm * 0.4) : 0);
+              }
               
-              const scale = 0.62 + zNorm * 0.28;
+              const scale = isMobile 
+                ? (0.88 + Math.max(0, 1 - Math.abs(relIndex)) * 0.12) 
+                : (0.62 + zNorm * 0.28);
               const zIndex = Math.round((z + responsiveRadius) * 10) + (isFocal ? 1000 : 0);
 
-              let widthClass = 'w-36 h-56 sm:w-48 sm:h-72';
-              if (config.aspectRatio === 'landscape') widthClass = 'w-48 h-36 sm:w-60 sm:h-44';
-              else if (config.aspectRatio === 'square') widthClass = 'w-40 h-40 sm:w-52 sm:h-52';
+              let widthClass = isMobile ? 'w-[230px] h-[320px]' : 'w-36 h-56 sm:w-48 sm:h-72';
+              if (config.aspectRatio === 'landscape') widthClass = isMobile ? 'w-[280px] h-[200px]' : 'w-48 h-36 sm:w-60 sm:h-44';
+              else if (config.aspectRatio === 'square') widthClass = isMobile ? 'w-[240px] h-[240px]' : 'w-40 h-40 sm:w-52 sm:h-52';
 
               return (
                 <div
                   key={card.id}
                   className={`spiral-card-wrapper absolute rounded-xl p-0.5 ${widthClass}`}
                   style={{
-                    transform: `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}deg) scale(${scale})`,
+                    transform: `translate3d(${finalX}px, ${finalY}px, ${finalZ}px) rotateY(${rotY}deg) scale(${scale})`,
                     opacity,
                     zIndex,
                     pointerEvents: opacity < 0.25 ? 'none' : 'auto',

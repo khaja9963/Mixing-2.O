@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 export const FloatingSocialTooltip: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close when clicking or tapping outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
   const socialLinks = [
     {
       name: 'LinkedIn',
       url: 'https://www.linkedin.com/company/clyptus/posts/?feedView=all',
       // Top position on hover
       position: 'group-hover:-translate-y-20 group-hover:translate-x-0',
+      activePosition: '-translate-y-20 translate-x-0',
       colorClass: 'text-[#0077b5] hover:!bg-[#0077b5] hover:!text-white',
       icon: (
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -19,6 +38,7 @@ export const FloatingSocialTooltip: React.FC = () => {
       url: 'https://facebook.com',
       // Top-Left 45deg position on hover
       position: 'group-hover:-translate-y-15 group-hover:-translate-x-11',
+      activePosition: '-translate-y-15 -translate-x-11',
       colorClass: 'text-[#1877f2] hover:!bg-[#1877f2] hover:!text-white',
       icon: (
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -31,6 +51,7 @@ export const FloatingSocialTooltip: React.FC = () => {
       url: 'https://youtube.com',
       // Mid-Left 75deg position on hover (inward, fully visible)
       position: 'group-hover:-translate-y-7 group-hover:-translate-x-18',
+      activePosition: '-translate-y-7 -translate-x-18',
       colorClass: 'text-[#ff0000] hover:!bg-[#ff0000] hover:!text-white',
       icon: (
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -43,6 +64,7 @@ export const FloatingSocialTooltip: React.FC = () => {
       url: 'https://instagram.com',
       // Bottom-Left position on hover
       position: 'group-hover:translate-y-6 group-hover:-translate-x-18',
+      activePosition: 'translate-y-6 -translate-x-18',
       colorClass: 'text-[#e4405f] hover:!bg-gradient-to-tr hover:!from-[#f09433] hover:!via-[#dc2743] hover:!to-[#bc1888] hover:!text-white',
       icon: (
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -53,7 +75,7 @@ export const FloatingSocialTooltip: React.FC = () => {
   ];
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 group flex items-center justify-center select-none">
+    <div ref={containerRef} className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 group flex items-center justify-center select-none">
       
       {/* Invisible Hover Helper Region (.tooltip9) - Prevents hover flicker when moving mouse to floating icons */}
       <div className="absolute w-44 h-44 rounded-full -inset-14 opacity-0 group-hover:pointer-events-auto pointer-events-none z-0" />
@@ -67,7 +89,11 @@ export const FloatingSocialTooltip: React.FC = () => {
           rel="noopener noreferrer"
           title={item.name}
           style={{ transitionDelay: `${index * 40}ms` }}
-          className={`absolute w-10 h-10 rounded-full bg-white shadow-xl border border-slate-200/80 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-50 pointer-events-none group-hover:pointer-events-auto transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-10 ${item.position} ${item.colorClass}`}
+          className={`absolute w-10 h-10 rounded-full bg-white shadow-xl border border-slate-200/80 flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-10 ${item.colorClass} ${
+            isOpen 
+              ? `opacity-100 scale-100 pointer-events-auto ${item.activePosition}` 
+              : `opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-50 pointer-events-none group-hover:pointer-events-auto ${item.position}`
+          }`}
         >
           {item.icon}
         </a>
@@ -75,13 +101,22 @@ export const FloatingSocialTooltip: React.FC = () => {
 
       {/* Main Trigger Button */}
       <button
+        onClick={() => setIsOpen(!isOpen)}
         aria-label="Connect With Us"
-        className="relative z-20 w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 group-hover:bg-white text-white group-hover:text-blue-600 flex items-center justify-center shadow-2xl shadow-blue-600/40 border border-white/20 group-hover:border-slate-200 transition-all duration-500 ease-out hover:scale-110 active:scale-95 cursor-pointer overflow-hidden"
+        className={`relative z-20 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ease-out active:scale-95 cursor-pointer overflow-hidden ${
+          isOpen
+            ? 'bg-white text-blue-600 border border-slate-200 shadow-blue-500/20'
+            : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 group-hover:bg-white text-white group-hover:text-blue-600 shadow-blue-600/40 border border-white/20 group-hover:border-slate-200'
+        }`}
       >
         <div className="relative w-6 h-6 flex items-center justify-center">
           {/* Default Icon (Globe / World Network Icon) */}
           <svg
-            className="w-6 h-6 absolute transition-all duration-500 transform group-hover:rotate-90 group-hover:opacity-0 group-hover:scale-50 text-white"
+            className={`w-6 h-6 absolute transition-all duration-500 transform ${
+              isOpen
+                ? 'rotate-90 opacity-0 scale-50'
+                : 'group-hover:rotate-90 group-hover:opacity-0 group-hover:scale-50 text-white group-hover:text-blue-600'
+            }`}
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -104,9 +139,13 @@ export const FloatingSocialTooltip: React.FC = () => {
             />
           </svg>
 
-          {/* Hover Symbol (Close X / Active Social Tool Symbol) */}
+          {/* Hover / Active Open Symbol (Close X) */}
           <svg
-            className="w-6 h-6 absolute transition-all duration-500 transform -rotate-90 opacity-0 scale-50 group-hover:rotate-0 group-hover:opacity-100 group-hover:scale-100 text-blue-600"
+            className={`w-6 h-6 absolute transition-all duration-500 transform text-blue-600 ${
+              isOpen
+                ? 'rotate-0 opacity-100 scale-100'
+                : '-rotate-90 opacity-0 scale-50 group-hover:rotate-0 group-hover:opacity-100 group-hover:scale-100'
+            }`}
             fill="none"
             stroke="currentColor"
             strokeWidth="2.5"

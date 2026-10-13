@@ -63,11 +63,6 @@ export const ContactSection: React.FC = () => {
 
         {/* Top Header Section */}
         <div className="text-center flex flex-col items-center gap-3.5 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-sky-200/80 text-xs font-mono text-sky-700 font-bold uppercase shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-            GLOBAL ENTERPRISE CONSULTING & 3D INTERACTIVE NETWORK
-          </div>
-
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
             Let’s Build Something <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -113,15 +108,11 @@ export const ContactSection: React.FC = () => {
                       onClick={() => setSelectedOfficeId(isSelected ? null : office.id)}
                       onMouseEnter={() => setHoveredOfficeId(office.id)}
                       onMouseLeave={() => setHoveredOfficeId(null)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isSelected
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${isSelected
                         ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-300'
                         : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
                         }`}
                     >
-                      <span
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: isSelected ? '#ffffff' : office.color }}
-                      />
                       <span>{office.city}</span>
                     </button>
                   );
@@ -344,12 +335,12 @@ export const ContactSection: React.FC = () => {
           </div>
 
           {/* RIGHT COLUMN: LARGE INTERACTIVE 3D GLOBE CONTAINER */}
-          <div className="lg:col-span-6 flex flex-col gap-4 order-1 lg:order-2 sticky top-24">
-            <div className="relative w-full rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-slate-50/80 border border-sky-100 shadow-xl overflow-hidden min-h-[460px] sm:min-h-[560px] lg:min-h-[640px] flex items-center justify-center">
+          <div className="lg:col-span-6 flex flex-col gap-4 order-1 lg:order-2 lg:sticky lg:top-24">
+            <div className="relative w-full rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-slate-50/80 border border-sky-100 shadow-xl overflow-hidden h-[280px] sm:h-[400px] lg:min-h-[640px] lg:h-auto flex items-center justify-center">
 
               {/* Subtle background circular glow behind Earth */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[380px] sm:w-[460px] h-[380px] sm:h-[460px] rounded-full bg-gradient-to-tr from-sky-200/30 to-indigo-200/20 blur-2xl" />
+                <div className="w-[240px] sm:w-[380px] lg:w-[460px] h-[240px] sm:h-[380px] lg:h-[460px] rounded-full bg-gradient-to-tr from-sky-200/30 to-indigo-200/20 blur-2xl" />
               </div>
 
               {/* The 3D Interactive Three.js Globe */}
@@ -374,10 +365,6 @@ export const ContactSection: React.FC = () => {
               <p className="text-xs text-slate-500 font-medium">
                 Comprehensive physical addresses and direct executive channels
               </p>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-sky-700">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>All offices operational</span>
             </div>
           </div>
 

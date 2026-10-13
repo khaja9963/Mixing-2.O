@@ -165,8 +165,9 @@ export const FullPageParticleBackground: React.FC = () => {
       }
 
       const totalTarget = TOTAL_PARTICLE_COUNT;
-      const blueTargetCount = 3100;
-      const orangeTargetCount = totalTarget - blueTargetCount; // 1900
+      const blueRatio = 0.62;
+      const blueTargetCount = Math.round(totalTarget * blueRatio);
+      const orangeTargetCount = totalTarget - blueTargetCount;
 
       logoPoints = [];
 
@@ -230,24 +231,12 @@ export const FullPageParticleBackground: React.FC = () => {
       if (targetEl) {
         const rect = targetEl.getBoundingClientRect();
         const vh = height;
-        const centerY = rect.top + rect.height * 0.52;
+        const centerY = rect.top + rect.height * 0.5;
         const screenCenterY = vh * 0.5;
-        // Asymmetric entrance & early dispersion curve:
-        // Entrance: Assembles smoothly as target approaches center from bottom
-        // Exit: Disperses EARLY as target moves past center (long before going out of window)
-        if (centerY >= screenCenterY) {
-          const distBelow = centerY - screenCenterY;
-          const maxEntranceDist = vh * 0.55;
-          const rawProgress = Math.max(0, Math.min(1, 1 - distBelow / maxEntranceDist));
-          const scaledProgress = Math.min(1, rawProgress / 0.70);
-          targetAssembleFactor = scaledProgress * scaledProgress * (3 - 2 * scaledProgress);
-        } else {
-          // As soon as scrolling continues past center, disperse early!
-          const distAbove = screenCenterY - centerY;
-          const maxExitDist = vh * 0.18; // Disperses within 18% vh past center, while still fully on screen
-          const rawProgress = Math.max(0, Math.min(1, 1 - distAbove / maxExitDist));
-          targetAssembleFactor = rawProgress * rawProgress * (3 - 2 * rawProgress);
-        }
+
+        // Auto combine when section approaches center on scroll-down; auto disperse as user scrolls down past center
+        const isCombined = centerY <= screenCenterY + vh * 0.42 && centerY >= screenCenterY - 50;
+        targetAssembleFactor = isCombined ? 1 : 0;
 
         const maxLogoW = Math.min(rect.width * 0.88, 520);
         const logoW = Math.max(280, maxLogoW);
@@ -261,8 +250,8 @@ export const FullPageParticleBackground: React.FC = () => {
         };
       }
 
-      // Responsive lerp assembly factor (0.075 factor) for instant responsive dispersion
-      smoothedAssembleFactor += (targetAssembleFactor - smoothedAssembleFactor) * 0.075;
+      // Responsive automatic assembly factor (0.095 speed matching AiGalaxyParticleSection)
+      smoothedAssembleFactor += (targetAssembleFactor - smoothedAssembleFactor) * 0.095;
       const assembleFactor = Math.abs(smoothedAssembleFactor) < 0.0001 ? 0 : smoothedAssembleFactor;
 
       // Smooth mouse lerp

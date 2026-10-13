@@ -305,15 +305,15 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
         const world = new Globe(mount)
           .backgroundColor('rgba(0,0,0,0)')
           .showAtmosphere(true)
-          .atmosphereColor('#8b87ea')
-          .atmosphereAltitude(0.2)
+          .atmosphereColor('#38bdf8')
+          .atmosphereAltitude(0.22)
           .polygonsData((countriesData as { features: object[] }).features)
           .polygonCapColor((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
-            return HIGHLIGHT[feat.properties?.ISO_A3] || 'rgba(139,135,234,0.28)';
+            return HIGHLIGHT[feat.properties?.ISO_A3] || 'rgba(224,242,254,0.38)';
           })
-          .polygonSideColor(() => 'rgba(74,71,196,0.12)')
-          .polygonStrokeColor(() => 'rgba(231,236,242,0.25)')
+          .polygonSideColor(() => 'rgba(3,105,161,0.25)')
+          .polygonStrokeColor(() => 'rgba(255,255,255,0.45)')
           .polygonAltitude((f: unknown) => {
             const feat = f as { properties: { ISO_A3: string } };
             return HIGHLIGHT[feat.properties?.ISO_A3] ? 0.012 : 0.005;
@@ -421,14 +421,23 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
           });
 
         const mat = world.globeMaterial() as unknown as { color: { set: (c: string) => void }; opacity: number; transparent: boolean };
-        mat.color.set('#12142f');
-        mat.opacity = 0.92;
+        mat.color.set('#0284c7');
+        mat.opacity = 0.95;
         mat.transparent = true;
 
+        const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 1024;
         const controls = world.controls();
         controls.autoRotate = !reduceMotion;
         controls.autoRotateSpeed = 2.5;
         controls.enableZoom = false;
+
+        if (isMobileDevice && controls) {
+          controls.enableRotate = false;
+          const canvasEl = mount.querySelector('canvas');
+          if (canvasEl) {
+            canvasEl.style.touchAction = 'pan-y';
+          }
+        }
 
         worldRef.current = world;
 
@@ -480,7 +489,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
   }, []);
 
   return (
-    <div className={`relative w-full h-full min-h-[380px] sm:min-h-[480px] lg:min-h-[560px] flex items-center justify-center overflow-hidden ${className}`}>
+    <div className={`relative w-full h-full min-h-[260px] sm:min-h-[380px] lg:min-h-[560px] flex items-center justify-center overflow-hidden touch-pan-y ${className}`}>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center gap-2 text-xs font-mono text-slate-400">
           <span className="w-3.5 h-3.5 rounded-full border-2 border-indigo-400/40 border-t-indigo-500 animate-spin" />
@@ -489,7 +498,7 @@ export const ClyptusInteractiveGlobe: React.FC<ClyptusInteractiveGlobeProps> = (
       )}
       
       {/* 3D Canvas Mount */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y" />
 
 
 

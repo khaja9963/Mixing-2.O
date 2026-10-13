@@ -12,7 +12,6 @@ import {
   Cpu,
   LineChart,
   Bot,
-  FlaskConical,
   ShoppingBag,
   Truck,
   HeartPulse,
@@ -235,18 +234,15 @@ export const AiServicesPage: React.FC<AiServicesPageProps> = ({ onNavigateContac
           {aiServicesList.map((srv, idx) => {
             const IconComp = srv.icon;
 
-            let badgeClasses = 'bg-sky-50 text-sky-700 border-sky-200';
             let iconClasses = 'bg-sky-50 border-sky-100 text-sky-600 group-hover:bg-sky-600 group-hover:text-white';
             let hoverTitle = 'group-hover:text-sky-600';
             let hoverBorder = 'hover:border-sky-400';
 
             if (idx === 1) {
-              badgeClasses = 'bg-indigo-50 text-indigo-700 border-indigo-200';
               iconClasses = 'bg-indigo-50 border-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white';
               hoverTitle = 'group-hover:text-indigo-600';
               hoverBorder = 'hover:border-indigo-400';
             } else if (idx === 2) {
-              badgeClasses = 'bg-purple-50 text-purple-700 border-purple-200';
               iconClasses = 'bg-purple-50 border-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white';
               hoverTitle = 'group-hover:text-purple-600';
               hoverBorder = 'hover:border-purple-400';
@@ -262,9 +258,6 @@ export const AiServicesPage: React.FC<AiServicesPageProps> = ({ onNavigateContac
                   <div className="flex items-center justify-between mb-6">
                     <span className="text-3xl font-black font-mono tracking-tighter text-slate-300 group-hover:text-slate-900 transition-colors">
                       {srv.number}
-                    </span>
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-extrabold tracking-wider uppercase border ${badgeClasses}`}>
-                      {srv.badge}
                     </span>
                   </div>
 
@@ -444,21 +437,12 @@ export const AiServicesPage: React.FC<AiServicesPageProps> = ({ onNavigateContac
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-mono font-extrabold mb-3 uppercase">
-                <FlaskConical className="w-3.5 h-3.5 text-purple-600" />
-                <span>INNOVATION LAB • RESEARCH & EXPLORATION</span>
-              </div>
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 mb-3">
                 Exploring <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-500">Tomorrow</span>
               </h2>
               <p className="text-sm sm:text-base text-slate-600 max-w-2xl font-medium">
                 Active R&D focus areas and emerging technology evaluations currently undergoing internal validation prior to client delivery rollout.
               </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 font-mono max-w-xs shadow-sm">
-              <span className="text-amber-700 font-bold block mb-1">⚠️ R&D STATUS NOTE</span>
-              Exploration and research initiatives under evaluation. Not presented as production client deliverables until management clearance.
             </div>
           </div>
 
