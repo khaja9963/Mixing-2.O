@@ -267,14 +267,6 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
 
         <div className="relative max-w-5xl mx-auto flex flex-col items-center text-center">
           
-          {/* Context Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200/80 text-sky-700 shadow-xs mb-6 animate-in fade-in slide-in-from-bottom-2">
-            <Users className="w-4 h-4 text-sky-600" />
-            <span className="text-xs font-mono font-extrabold tracking-widest uppercase text-sky-700">
-              IT & SAP STAFFING AND TALENT ACQUISITION
-            </span>
-          </div>
-
           {/* H1 Main Title (Scroll Triggered Animated Heading) */}
           <ScrollAnimatedHeroTitle />
 
@@ -282,21 +274,6 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
           <p className="text-base sm:text-lg lg:text-xl font-medium text-slate-600 max-w-3xl leading-relaxed mb-8">
             Hire SAP, ERP and IT talent faster. Clyptus offers leadership hiring, contract and permanent staffing, and RPO with global delivery from India and offices in the UAE and USA.
           </p>
-
-          {/* Notice Callout */}
-          <div className="w-full max-w-2xl bg-white border border-slate-200/90 rounded-2xl p-4 mb-10 text-xs font-mono text-slate-600 flex items-center justify-between gap-4 shadow-xs">
-            <div className="flex items-center gap-2 text-left">
-              <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping shrink-0" />
-              <span>This page is tailored for enterprise employers and companies seeking talent.</span>
-            </div>
-            <button 
-              onClick={() => setShowCareersModal(true)}
-              className="text-sky-600 font-bold whitespace-nowrap hover:underline flex items-center gap-1 shrink-0"
-            >
-              <span>Careers Page</span>
-              <ExternalLink className="w-3 h-3" />
-            </button>
-          </div>
 
           {/* Hero Primary Action CTA Button (Home Page Amber Consultation Style) */}
           <div className="flex flex-col sm:flex-row items-center gap-4">

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, UserCheck, ShieldCheck, Clock, Sparkles } from 'lucide-react';
+import { Search, UserCheck, ShieldCheck, Clock } from 'lucide-react';
 
 export interface ScreeningStep {
   step: string;
@@ -79,12 +79,6 @@ export const ScreeningProcessCarousel: React.FC<ScreeningProcessCarouselProps> =
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto z-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-50 border border-sky-200/80 text-sky-700 shadow-xs mb-2.5">
-            <Sparkles className="w-3.5 h-3.5 text-sky-600 animate-pulse" />
-            <span className="text-[11px] font-mono font-extrabold tracking-widest uppercase">
-              RIGOROUS VETTING PROCESS
-            </span>
-          </div>
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 mb-2">
             How We Screen and Deploy
           </h2>
